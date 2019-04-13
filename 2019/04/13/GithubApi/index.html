@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Github开放Api使用总结 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/">
+        </div>
+        <div class="name">
+            <i>和肖飞</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>HOME</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>TAGS</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>ARCHIVES</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>ABOUT</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#api文档"><span class="toc-text">api文档</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#users"><span class="toc-text">users</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#repos"><span class="toc-text">repos</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Issues"><span class="toc-text">Issues</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Organizations"><span class="toc-text">Organizations</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Search"><span class="toc-text">Search</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Teams"><span class="toc-text">Teams</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Projects"><span class="toc-text">Projects</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事项"><span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考博客"><span class="toc-text">参考博客</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">search</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Github开放Api使用总结
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">Post：<span>2019-04-13 09:04:31</span></span>
+        
+        <span class="attr">Tags：/
+        
+        <a class="tag" href="/tags/#github" title="github">github</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">Visit：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <h3 id="api文档"><a href="#api文档" class="headerlink" title="api文档"></a><a href="https://developer.github.com/v3/issues/" target="_blank" rel="noopener">api文档</a></h3><p>有rest ful和graphql两种风格的api，不需要授权的api可以直接在浏览器中打开，对于需要授权的api，<a href="https://segmentfault.com/a/1190000015144126" target="_blank" rel="noopener">授权方式可以参考</a>，另外调用API的频率有一定<a href="https://api.github.com/rate_limit" target="_blank" rel="noopener">限制</a>。</p>
+<h3 id="users"><a href="#users" class="headerlink" title="users"></a>users</h3><p>获取自己的信息：<a href="https://api.github.com/users/JackFei" target="_blank" rel="noopener">https://api.github.com/users/JackFei</a><br>获取自己的仓库信息列表：<a href="https://api.github.com/users/JackFei/repos" target="_blank" rel="noopener">https://api.github.com/users/JackFei/repos</a><br>获取follow自己的用户信息列表：<a href="https://api.github.com/users/JackFei/followers" target="_blank" rel="noopener">https://api.github.com/users/JackFei/followers</a><br>获取自己follow的用户列表：<a href="https://api.github.com/users/JackFei/following" target="_blank" rel="noopener">https://api.github.com/users/JackFei/following</a><br>获取自己star的仓库列表：<a href="https://api.github.com/users/JackFei/starred" target="_blank" rel="noopener">https://api.github.com/users/JackFei/starred</a><br>获取自己的组织列表：<a href="https://api.github.com/users/JackFei/orgs" target="_blank" rel="noopener">https://api.github.com/users/JackFei/orgs</a><br>判断自己是否关注某个人：<a href="https://api.github.com/users/JackFei/following/rauchg" target="_blank" rel="noopener">https://api.github.com/users/JackFei/following/rauchg</a><br>判断自己是否star某个仓库：<a href="https://api.github.com/users/JackFei/starred/ruanyf/articles" target="_blank" rel="noopener">https://api.github.com/users/JackFei/starred/ruanyf/articles</a></p>
+<h3 id="repos"><a href="#repos" class="headerlink" title="repos"></a>repos</h3><p>获取repo的内容列表：<a href="https://api.github.com/repos/solomonxie/gists/contents" target="_blank" rel="noopener">https://api.github.com/repos/solomonxie/gists/contents</a><br>获取repo中子目录的内容列表：<a href="https://api.github.com/repos/solomonxie/gists/contents/目录名" target="_blank" rel="noopener">https://api.github.com/repos/solomonxie/gists/contents/目录名</a><br>获取repo中某文件信息（不包括内容）：<a href="https://api.github.com/repos/solomonxie/gists/contents/文件路径" target="_blank" rel="noopener">https://api.github.com/repos/solomonxie/gists/contents/文件路径</a><br>获取某文件的原始内容（Raw）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">通过上面的文件信息中提取download_url这条链接，就能获取它的原始内容了</span><br><span class="line">或者直接访问：https://raw.githubusercontent.com/用户名/仓库名/分支名/文件路径</span><br></pre></td></tr></table></figure></p>
+<p>获取repo中所有的commits列表：<a href="https://api.github.com/repos/用户名/仓库名/commits" target="_blank" rel="noopener">https://api.github.com/repos/用户名/仓库名/commits</a><br>获取某条commit详情：<a href="https://api.github.com/repos/用户名/仓库名/commits/某一条commit的SHA" target="_blank" rel="noopener">https://api.github.com/repos/用户名/仓库名/commits/某一条commit的SHA</a></p>
+<h3 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a><a href="https://developer.github.com/v3/issues/" target="_blank" rel="noopener">Issues</a></h3><p>获取issues列表：<a href="https://api.github.com/repos/JackFei/WebIssues/issues" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues</a><br>获取某条issue详情：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/1" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/1</a><br>获取某条issue中的comments列表：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/1/comments" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/1/comments</a><br>获取某条comments详情：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/comments/440704176" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/comments/440704176</a><br>创建一条issue：<a href="https://api.github.com/repos/JackFei/WebIssues/issues，POST方法，需要token，参数如下：" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues，POST方法，需要token，参数如下：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;Creating issue from API&quot;,</span><br><span class="line">  &quot;body&quot;: &quot;Posting a issue from Insomnia&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>锁住某条issue不允许别人评论：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/10/lock，PUT方法，需要token，参数如下：" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/10/lock，PUT方法，需要token，参数如下：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;locked&quot;: true,</span><br><span class="line">  &quot;active_lock_reason&quot;: &quot;too heated&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>解锁某条issue：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/10/lock，DELETE方法，无参数，需要token认证" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/10/lock，DELETE方法，无参数，需要token认证</a><br>在issue中添加comments：<a href="https://api.github.com/repos/JackFei/WebIssues/issues/10/comments，POST方法，需要token认证，参数如下：" target="_blank" rel="noopener">https://api.github.com/repos/JackFei/WebIssues/issues/10/comments，POST方法，需要token认证，参数如下：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;body&quot;: &quot;Create a comment from API&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Organizations"><a href="#Organizations" class="headerlink" title="Organizations"></a>Organizations</h3><p>获取组织信息：<a href="https://api.github.com/orgs/tencent" target="_blank" rel="noopener">https://api.github.com/orgs/tencent</a><br>获取组织下的仓库信息：<a href="https://api.github.com/orgs/tencent/repos" target="_blank" rel="noopener">https://api.github.com/orgs/tencent/repos</a><br>获取组织的events：<a href="https://api.github.com/orgs/tencent/events" target="_blank" rel="noopener">https://api.github.com/orgs/tencent/events</a><br>获取组织下的成员：<a href="https://api.github.com/orgs/tencent/members" target="_blank" rel="noopener">https://api.github.com/orgs/tencent/members</a><br>获取组织public成员：<a href="https://api.github.com/orgs/tencent/public_members" target="_blank" rel="noopener">https://api.github.com/orgs/tencent/public_members</a></p>
+<h3 id="Search"><a href="#Search" class="headerlink" title="Search"></a><a href="https://developer.github.com/v3/search/" target="_blank" rel="noopener">Search</a></h3><p>搜索仓库：<a href="https://api.github.com/search/repositories?q=react&amp;sort=stars&amp;order=desc" target="_blank" rel="noopener">https://api.github.com/search/repositories?q=react&amp;sort=stars&amp;order=desc</a><br>搜索code：<a href="https://api.github.com/search/code?q=addClass+in:file+language:js+repo:jquery/jquery" target="_blank" rel="noopener">https://api.github.com/search/code?q=addClass+in:file+language:js+repo:jquery/jquery</a><br>搜索issues：<a href="https://api.github.com/search/issues?q=windows+label:bug+language:python+state:open&amp;sort=created&amp;order=asc" target="_blank" rel="noopener">https://api.github.com/search/issues?q=windows+label:bug+language:python+state:open&amp;sort=created&amp;order=asc</a><br>搜索users：<a href="https://api.github.com/search/users?q=tom+repos:%3E42+followers:%3E1000" target="_blank" rel="noopener">https://api.github.com/search/users?q=tom+repos:%3E42+followers:%3E1000</a></p>
+<h3 id="Teams"><a href="#Teams" class="headerlink" title="Teams"></a><a href="https://developer.github.com/v3/teams/" target="_blank" rel="noopener">Teams</a></h3><h3 id="Projects"><a href="#Projects" class="headerlink" title="Projects"></a><a href="https://developer.github.com/v3/projects/" target="_blank" rel="noopener">Projects</a></h3><p>用户的projects：<a href="https://api.github.com/users/JackFei/projects" target="_blank" rel="noopener">https://api.github.com/users/JackFei/projects</a><br>组织的projects：<a href="https://api.github.com/orgs/tencent/projects" target="_blank" rel="noopener">https://api.github.com/orgs/tencent/projects</a><br>仓库的projects：<a href="https://api.github.com/repos/BestResume/projects" target="_blank" rel="noopener">https://api.github.com/repos/BestResume/projects</a></p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>1.{}括号参数主要用户判断是否进行了某项操作，如下实例：<br>&#160; &#160; &#160; &#160;<a href="https://api.github.com/users/torvalds/following{/other_user}" target="_blank" rel="noopener">https://api.github.com/users/torvalds/following{/other_user}</a><br>&#160; &#160; &#160; &#160;<a href="https://api.github.com/users/JackFei/starred{/owner}{/repo}" target="_blank" rel="noopener">https://api.github.com/users/JackFei/starred{/owner}{/repo}</a><br>2.测试带有token的api，可以使用postman<br><img src="/img/postman_token.png" alt="avatar"></p>
+<h3 id="参考博客"><a href="#参考博客" class="headerlink" title="参考博客"></a>参考博客</h3><p>1.<a href="https://segmentfault.com/a/1190000015144126" target="_blank" rel="noopener">https://segmentfault.com/a/1190000015144126</a><br>2.<a href="https://github.com/JackFei/GitWxApp" target="_blank" rel="noopener">基于taro的微信小程序</a></p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/JackFei">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>
