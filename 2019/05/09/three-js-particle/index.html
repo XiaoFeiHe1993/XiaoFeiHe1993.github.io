@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        three.js粒子特效 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>和肖飞</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>HOME</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>TAGS</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>ARCHIVES</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>ABOUT</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、three-js显示3D物体"><span class="toc-text">一、three.js显示3D物体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、TweenMax动画库"><span class="toc-text">二、TweenMax动画库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、顶点"><span class="toc-text">三、顶点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、一个粒子动画"><span class="toc-text">四、一个粒子动画</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、加载obj模型"><span class="toc-text">五、加载obj模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#六、obj模型粒子动画"><span class="toc-text">六、obj模型粒子动画</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">search</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        three.js粒子特效
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">Post：<span>2019-05-09 22:47:16</span></span>
+        
+        <span class="attr">Tags：/
+        
+        <a class="tag" href="/tags/#3D" title="3D">3D</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">Visit：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <h3 id="一、three-js显示3D物体"><a href="#一、three-js显示3D物体" class="headerlink" title="一、three.js显示3D物体"></a>一、three.js显示3D物体</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">// 创建一个场景</span><br><span class="line">var scene = new THREE.Scene();</span><br><span class="line">// 创建相机</span><br><span class="line">var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );</span><br><span class="line">// 创建渲染器</span><br><span class="line">var renderer = new THREE.WebGLRenderer();</span><br><span class="line">renderer.setSize( window.innerWidth, window.innerHeight );</span><br><span class="line">// 添加渲染器到dom</span><br><span class="line">document.body.appendChild( renderer.domElement );</span><br><span class="line"></span><br><span class="line">// 生成3D物体</span><br><span class="line">var geometry = new THREE.BoxGeometry( 1, 1, 1 );</span><br><span class="line">// 生成材质</span><br><span class="line">var material = new THREE.MeshBasicMaterial( &#123; color: 0x00ff00 &#125; );</span><br><span class="line">// 把材质添加到物体上</span><br><span class="line">var cube = new THREE.Mesh( geometry, material );</span><br><span class="line">// 把网格添加到场景中</span><br><span class="line">scene.add( cube );</span><br><span class="line"></span><br><span class="line">camera.position.z = 5;</span><br><span class="line"></span><br><span class="line">var animate = function () &#123;</span><br><span class="line">	requestAnimationFrame( animate );</span><br><span class="line"></span><br><span class="line">	cube.rotation.x += 0.01;</span><br><span class="line">	cube.rotation.y += 0.01;</span><br><span class="line"></span><br><span class="line">	renderer.render( scene, camera );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">animate();</span><br></pre></td></tr></table></figure>
+<h3 id="二、TweenMax动画库"><a href="#二、TweenMax动画库" class="headerlink" title="二、TweenMax动画库"></a>二、TweenMax动画库</h3><p>TweenMax.to( target:Object, duration:Number, vars:Object )<br>此方法用于创建一个从当前属性到指定目标属性的TweenMax动画对象。</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>是否必填</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>target</td>
+<td>object</td>
+<td>是</td>
+<td>需要动画的对象</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>number</td>
+<td>是</td>
+<td>动画持续时间，一般是秒</td>
+</tr>
+<tr>
+<td>vars</td>
+<td>object</td>
+<td>是</td>
+<td>动画参数（CSS属性、延迟、重复次数等）</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://www.tweenmax.com.cn/api/tweenmax/TweenMax.to" target="_blank" rel="noopener">TweenMax</a>还有一些其他方法，这里不再介绍。</p>
+<h3 id="三、顶点"><a href="#三、顶点" class="headerlink" title="三、顶点"></a>三、顶点</h3><p>3D物体都是由一定数量的三角形的面组成，各个平面相交的地方就存在一定数量的顶点，我们重要的就是使用物体的顶点。不过这里有些要注意的地方。<br>1.不同物体的顶点不同，我们要使用顶点最少的物体<br>2.由于3D物体顶点计算量很大，对性能有较高要求，因此我们尽量减少面的数量、减少顶点的数量<br>3.我们也可以使用3D max制作的模型，这样有很大的自由度</p>
+<h3 id="四、一个粒子动画"><a href="#四、一个粒子动画" class="headerlink" title="四、一个粒子动画"></a>四、一个粒子动画</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">var container;</span><br><span class="line">var camera, scene, renderer, group, particle;</span><br><span class="line"></span><br><span class="line">init();</span><br><span class="line">animate();</span><br><span class="line"></span><br><span class="line">function init() &#123;</span><br><span class="line">	// dom节点</span><br><span class="line">	container = document.createElement(&apos;div&apos;);</span><br><span class="line">	document.body.appendChild(container);</span><br><span class="line"></span><br><span class="line">	// 场景</span><br><span class="line">	scene = new THREE.Scene();</span><br><span class="line"></span><br><span class="line">	// 透视相机</span><br><span class="line">	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);</span><br><span class="line">	camera.position.z = 1000;</span><br><span class="line">	camera.position.y = 0;</span><br><span class="line"></span><br><span class="line">	// 组</span><br><span class="line">	group = new THREE.Group();</span><br><span class="line">	scene.add(group);</span><br><span class="line"></span><br><span class="line">	//创建一个球型</span><br><span class="line">	var geometry = new THREE.SphereGeometry(500, 32, 32);</span><br><span class="line">	var vl = geometry.vertices.length; // 球形顶点数量</span><br><span class="line"></span><br><span class="line">	for ( var i = 0; i &lt; vl; i++ ) &#123;</span><br><span class="line">		// 为每个点附上材质</span><br><span class="line">		var material = new THREE.SpriteCanvasMaterial(&#123;</span><br><span class="line">			color: Math.random() * 0x808008 + 0x808080,</span><br><span class="line">			program: function (context) &#123;</span><br><span class="line">				// 画点</span><br><span class="line">				context.beginPath();</span><br><span class="line">				context.arc(0, 0, 0.5, 0, Math.PI * 2, true);</span><br><span class="line">				context.fill();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		// 精灵</span><br><span class="line">		particle = new THREE.Sprite(material);</span><br><span class="line">		particle.position.x = 0;</span><br><span class="line">		particle.position.y = -500;</span><br><span class="line">		particle.position.z = 0;</span><br><span class="line">		particle.scale.x = particle.scale.y = Math.random() * 6 + 3;</span><br><span class="line">		var timerandom = 1 * Math.random();</span><br><span class="line"></span><br><span class="line">		//为每个点加动画</span><br><span class="line">		TweenMax.to(</span><br><span class="line">			particle.position,</span><br><span class="line">			timerandom,</span><br><span class="line">			&#123;</span><br><span class="line">				x: geometry.vertices[i].x + (0.5-Math.random()) * 100,</span><br><span class="line">				y: geometry.vertices[i].y + (0.5-Math.random()) * 100,</span><br><span class="line">				z: geometry.vertices[i].z + Math.random() * 100,</span><br><span class="line">				delay: 1.8,</span><br><span class="line">			&#125; </span><br><span class="line">		);</span><br><span class="line">		group.add(particle);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	// 渲染器</span><br><span class="line">	renderer = new THREE.CanvasRenderer();</span><br><span class="line">	renderer.setSize( window.innerWidth, window.innerHeight );</span><br><span class="line">	// 添加渲染器到dom</span><br><span class="line">	container.appendChild( renderer.domElement );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function animate() &#123;</span><br><span class="line">	requestAnimationFrame(animate);</span><br><span class="line">	renderer.render(scene, camera);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="五、加载obj模型"><a href="#五、加载obj模型" class="headerlink" title="五、加载obj模型"></a>五、加载obj模型</h3><p>我们可以使用3D max制作模型，导出为obj文件，下面为一个加载obj模型例子：<br>不过在里有几点要注意以下：<br>1.模型一定是要可访问的，因为模型本身是静态文件，不能直接被浏览器访问，使用serve这样的库才能让这些本地文件能直接浏览器使用，如果使用react等框架不存在这样的问题。<br>2.模型加载完得到的mesh、child都不存在顶点，一定要使用fromBufferGeometry这样得到模型顶点。<br>3.模型可能存在比例不对加载到浏览器太大看不到，可以设置缩放等<br>4.未设置灯光也可能引起模型加载完看不到<br>5.相机设置有问题也可能引起模型加载完看不到<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var loader = new window.THREE.OBJLoader();</span><br><span class="line">loader.load(&quot;obj/text.obj&quot;,function (loadedMesh) &#123;</span><br><span class="line">	loadedMesh.scale.set(10, 10, 10);</span><br><span class="line"></span><br><span class="line">	// 加载完obj文件是一个场景组，遍历它的子元素，赋值纹理并且更新面和点</span><br><span class="line">	loadedMesh.children.forEach(function (child) &#123;</span><br><span class="line">		var material = new window.THREE.MeshLambertMaterial(&#123;color: 0x0000ff&#125;);        </span><br><span class="line">		child.material = material;</span><br><span class="line">		</span><br><span class="line">		// 得到obj模型顶点</span><br><span class="line">		var geometry = new window.THREE.Geometry().fromBufferGeometry( child.geometry );</span><br><span class="line">		var vl = geometry.vertices.length;</span><br><span class="line">		console.log(geometry);</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	scene.add(loadedMesh);</span><br><span class="line">	camera.lookAt(loadedMesh.position);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="六、obj模型粒子动画"><a href="#六、obj模型粒子动画" class="headerlink" title="六、obj模型粒子动画"></a>六、obj模型粒子动画</h3><p>加载完obj模型，得到顶点之后，即可开始粒子动画。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/JackFei">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>
