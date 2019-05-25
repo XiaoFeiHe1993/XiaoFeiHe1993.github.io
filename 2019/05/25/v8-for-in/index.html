@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        译文：Fast for-in in V8 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>和肖飞</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>HOME</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>TAGS</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>ARCHIVES</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>ABOUT</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Fast-for-in-in-V8"><span class="toc-text">Fast for-in in V8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-spec"><span class="toc-text">The spec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-enum-cache"><span class="toc-text">The enum cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-mechanics-of-for-in"><span class="toc-text">The mechanics of for-in</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Problems-with-for-in"><span class="toc-text">Problems with for-in</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-KeyAccumulator"><span class="toc-text">The KeyAccumulator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Performance-improvements"><span class="toc-text">Performance improvements</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">search</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        译文：Fast for-in in V8
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">Post：<span>2019-05-25 09:56:33</span></span>
+        
+        <span class="attr">Tags：/
+        
+        <a class="tag" href="/tags/#译文" title="译文">译文</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">Visit：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>原文链接：<a href="https://v8.dev/blog/fast-for-in" target="_blank" rel="noopener">https://v8.dev/blog/fast-for-in</a></p>
+<h3 id="Fast-for-in-in-V8"><a href="#Fast-for-in-in-V8" class="headerlink" title="Fast for-in in V8"></a>Fast for-in in V8</h3><p><code>for-in</code>是许多框架中广泛使用的语言特性。尽管它无处不在，从实现的角度来看，它是一种比较模糊的语言结构，V8竭尽全力使它变的更快。在过去的一年中，<code>for-in</code>变得更加符合规范，并且在具体场景中速度提升了3倍。</p>
+<p>许多受欢迎的网站广泛使用了<code>for-in</code>，并将会从中受益。例如，在2016年早些时候，Facebook花费了7%的脚本时间在<code>for-in</code>上面，在Wikipedia上面，这个数字更高甚至到了大约8%。通过改善<code>for-in</code>的性能表现，Chrome51显著改善了这两个网站的性能。</p>
+<p><img src="https://v8.dev/_img/fast-for-in/wikipedia.png" alt></p>
+<p><img src="https://v8.dev/_img/fast-for-in/facebook.png" alt></p>
+<p>由于<code>for-in</code>的各种改进，Wikipedia和Facebook将它们的脚本时间改善了4%。请注意在同一时期，V8的其余部分也变的更快，使的脚本总体性能提高了4%以上。</p>
+<p>在博文接下来的内容，我们将解释我们如何设法加快这一核心语言功能，并同时解决长期存在的规范违规问题。</p>
+<h3 id="The-spec"><a href="#The-spec" class="headerlink" title="The spec"></a>The spec</h3><p>出于性能原因，<code>for-in</code>迭代语义是模糊的。</p>
+<p>当我们在不同的实现中观察<a href="https://tc39.github.io/ecma262/#sec-for-in-and-for-of-statements" target="_blank" rel="noopener">for-in的spec-text</a>时，它以一种意想不到的模糊方式编写。让我们看一下使用适当的陷阱迭代Proxy对象的示例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">const proxy = new Proxy(&#123; a: 1, b: 1&#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    getPrototypeOf(target) &#123;</span><br><span class="line">    console.log(&apos;getPrototypeOf&apos;);</span><br><span class="line">    return null;</span><br><span class="line">  &#125;,</span><br><span class="line">  ownKeys(target) &#123;</span><br><span class="line">    console.log(&apos;ownKeys&apos;);</span><br><span class="line">    return Reflect.ownKeys(target);</span><br><span class="line">  &#125;,</span><br><span class="line">  getOwnPropertyDescriptor(target, prop) &#123;</span><br><span class="line">    console.log(&apos;getOwnPropertyDescriptor name=&apos; + prop);</span><br><span class="line">    return Reflect.getOwnPropertyDescriptor(target, prop);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>在V8/Chrome 56你会得到下面的输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ownKeys</span><br><span class="line">getPrototypeOf</span><br><span class="line">getOwnPropertyDescriptor name=a</span><br><span class="line">a</span><br><span class="line">getOwnPropertyDescriptor name=b</span><br><span class="line">b</span><br></pre></td></tr></table></figure></p>
+<p>相反，你在Firefox 51中获得了不同语句顺序基于相同代码段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ownKeys</span><br><span class="line">getOwnPropertyDescriptor name=a</span><br><span class="line">getOwnPropertyDescriptor name=b</span><br><span class="line">getPrototypeOf</span><br><span class="line">a</span><br><span class="line">b</span><br></pre></td></tr></table></figure></p>
+<p>两种浏览器都遵循规范，但是规范并没有强制执行明确的指令顺序。要正确理解这些循环漏洞，让我们看一下spec文本：</p>
+<p>通常规范说明精确地指出了所需的确切步骤。但在这种情况下，它们提到一个简单的散文列表，甚至执行的顺序留给实施者。原因通常是规范的这些部分是在JavaScript引擎已经具有不同实现的事实之后编写的。该规范试图通过提供以下指示来绑定松散的末端：</p>
+<ol>
+<li>迭代器的throw和return方法为null，永远不会被调用。</li>
+<li>迭代器的下一个方法处理对象属性，以确定是否应将属性键作为迭代器值返回。</li>
+<li>返回的属性键不包括符号键。</li>
+<li>枚举期间可以删除目标对象的属性。</li>
+<li>在迭代器的下一个方法处理之前删除的属性将被忽略。如果在枚举期间向目标对象添加了新属性，则不能保证在活动枚举中处理新添加的属性。</li>
+<li>在任何枚举中，迭代器的下一个方法最多返回一次属性名。</li>
+<li>枚举目标对象的属性包括递归地枚举其原型的属性，原型的原型等;但是，如果原型的属性与已经由迭代器的下一个方法处理的属性具有相同的名称，则不会处理该原型的属性。</li>
+<li>在确定原型对象的属性是否已被处理时，不会考虑[可枚举]属性的值。</li>
+<li>原型对象的可枚举属性名称必须通过调用作为参数传递的原型对象属性来获得。</li>
+<li>EnamateObjectProperties必须通过调用目标对象的[OwnPropertyKeys]内部方法来获取其自己的属性键。</li>
+</ol>
+<p>这些步骤听起来很乏味，但是规范包含一个明确且更具可读性的示例实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function* EnumerateObjectProperties(obj) &#123;</span><br><span class="line">  const visited = new Set();</span><br><span class="line">  for (const key of Reflect.ownKeys(obj)) &#123;</span><br><span class="line">    if (typeof key === &apos;symbol&apos;) continue;</span><br><span class="line">    const desc = Reflect.getOwnPropertyDescriptor(obj, key);</span><br><span class="line">    if (desc &amp;&amp; !visited.has(key)) &#123;</span><br><span class="line">      visited.add(key);</span><br><span class="line">      if (desc.enumerable) yield key;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  const proto = Reflect.getPrototypeOf(obj);</span><br><span class="line">  if (proto === null) return;</span><br><span class="line">  for (const protoKey of EnumerateObjectProperties(proto)) &#123;</span><br><span class="line">    if (!visited.has(protoKey)) yield protoKey;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>既然你已经深入到了这里，你可能已经从前面的例子中注意到V8并不完全遵循规范示例实现。首先，<code>for-in</code>示例生成器以递增方式工作，而V8则预先收集所有keys，主要是出于性能原因。这非常好，实际上spec文本没有明确定义操作A-J的顺序。尽管如此，正如您将在本文稍后发现的那样，在2016年之前，V8并未完全遵守规范。</p>
+<h3 id="The-enum-cache"><a href="#The-enum-cache" class="headerlink" title="The enum cache"></a>The enum cache</h3><p><code>for-in</code>生成器的示例实现遵循收集和产生键的增量模式。在V8中，在第一步中收集属性键，然后仅在迭代阶段使用。对于V8，这使一些事情变得更容易。要了解原因，我们需要查看对象模型。</p>
+<p>一个简单的对象，例如{a：’value a’，b：’value b’，c：’value c’}可以在V8中有各种内部表示，我们将在详细的后续文章中展示这一点。这意味着根据我们拥有的属性类型 - 对象中的属性、快的属性或慢的属性-实际的属性名称存储在不同的位置。这使得收集可枚举keys成为一件非常重要的事情。</p>
+<p>V8通过隐藏类或所谓的Map来跟踪对象的结构。具有相同Map的对象具有相同的结构。此外，每个Map都有一个共享数据结构，描述符数组，其中包含有关每个属性的详细信息，例如属性存储在对象上的位置，属性名称以及可枚举性等详细信息。</p>
+<p>让我们暂时假设我们的JavaScript对象已达到其最终形状，并且不会添加或删除更多属性。在这种情况下，我们可以使用描述符数组作为键的源。如果只有可枚举的属性，则此方法有效。每次V8使用可通过Map的描述符数组访问的单独EnumCache时，为了避免过滤掉不可枚举属性的开销。</p>
+<p><img src="https://v8.dev/_img/fast-for-in/enum-cache.png" alt></p>
+<p>鉴于V8期望慢速字典对象经常更改（即通过添加和删除属性），对于具有字典属性的慢对象，没有描述符数组。因此，V8不为慢速属性提供EnumCache。类似的假设适用于索引属性，因此它们也被排除在EnumCache之外。</p>
+<p>让我们总结一下重要的事实：</p>
+<ol>
+<li>Maps are used to keep track of object shapes.</li>
+<li>Descriptor arrays store information about properties (name, configurability, visibility).</li>
+<li>Descriptor arrays can be shared between Maps.</li>
+<li>Each descriptor array can have an EnumCache listing only the enumerable named keys, not indexed property names.</li>
+</ol>
+<h3 id="The-mechanics-of-for-in"><a href="#The-mechanics-of-for-in" class="headerlink" title="The mechanics of for-in"></a>The mechanics of <code>for-in</code></h3><p>现在，您已经部分了解Maps的工作原理以及EnumCache与描述符数组的关系。V8通过Ignition（一个字节码解释器）和TurboFan（优化编译器）执行JavaScript，它们以类似的方式处理<code>for-in</code>。为简单起见，我们将使用伪C++方式来解释内部如何实现<code>for-in</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// For-In Prepare:</span><br><span class="line">FixedArray* keys = nullptr;</span><br><span class="line">Map* original_map = object-&gt;map();</span><br><span class="line">if (original_map-&gt;HasEnumCache()) &#123;</span><br><span class="line">  if (object-&gt;HasNoElements()) &#123;</span><br><span class="line">    keys = original_map-&gt;GetCachedEnumKeys();</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    keys = object-&gt;GetCachedEnumKeysWithElements();</span><br><span class="line">  &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">  keys = object-&gt;GetEnumKeys();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// For-In Body:</span><br><span class="line">for (size_t i = 0; i &lt; keys-&gt;length(); i++) &#123;</span><br><span class="line">  // For-In Next:</span><br><span class="line">  String* key = keys[i];</span><br><span class="line">  if (!object-&gt;HasProperty(key) continue;</span><br><span class="line">  EVALUATE_FOR_IN_BODY();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>For-in可以分为三个主要步骤：</p>
+<ol>
+<li>准备要迭代的keys</li>
+<li>获取下一个key</li>
+<li>评估整体<code>for-in</code></li>
+</ol>
+<p>“准备”步骤是这三个中最复杂的步骤，也是EnumCache发挥作用的地方。在上面的示例中，您可以看到，如果存在并且对象(及其原型)上没有元素(整数索引属性)，则V8直接使用EnumCache。对于存在索引属性名称的情况，V8跳转到C++中实现的运行时函数，该函数将它们预先添加到现有的枚举缓存中，如以下示例所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">FixedArray* JSObject::GetCachedEnumKeysWithElements() &#123;</span><br><span class="line">  FixedArray* keys = object-&gt;map()-&gt;GetCachedEnumKeys();</span><br><span class="line">  return object-&gt;GetElementsAccessor()-&gt;PrependElementIndices(object, keys);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FixedArray* Map::GetCachedEnumKeys() &#123;</span><br><span class="line">  // Get the enumerable property keys from a possibly shared enum cache</span><br><span class="line">  FixedArray* keys_cache = descriptors()-&gt;enum_cache()-&gt;keys_cache();</span><br><span class="line">  if (enum_length() == keys_cache-&gt;length()) return keys_cache;</span><br><span class="line">  return keys_cache-&gt;CopyUpTo(enum_length());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FixedArray* FastElementsAccessor::PrependElementIndices(</span><br><span class="line">      JSObject* object, FixedArray* property_keys) &#123;</span><br><span class="line">  Assert(object-&gt;HasFastElements());</span><br><span class="line">  FixedArray* elements = object-&gt;elements();</span><br><span class="line">  int nof_indices = CountElements(elements)</span><br><span class="line">  FixedArray* result = FixedArray::Allocate(property_keys-&gt;length() + nof_indices);</span><br><span class="line">  int insertion_index = 0;</span><br><span class="line">  for (int i = 0; i &lt; elements-&gt;length(); i++) &#123;</span><br><span class="line">    if (!HasElement(elements, i)) continue;</span><br><span class="line">    result[insertion_index++] = String::FromInt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  // Insert property keys at the end.</span><br><span class="line">  property_keys-&gt;CopyTo(result, nof_indices - 1);</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在没有找到现有EnumCache的情况下，我们再次跳转到C++并按照最初提供的规范步骤进行操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">FixedArray* JSObject::GetEnumKeys() &#123;</span><br><span class="line">  // Get the receiver’s enum keys.</span><br><span class="line">  FixedArray* keys = this-&gt;GetOwnEnumKeys();</span><br><span class="line">  // Walk up the prototype chain.</span><br><span class="line">  for (JSObject* object : GetPrototypeIterator()) &#123;</span><br><span class="line">     // Append non-duplicate keys to the list.</span><br><span class="line">     keys = keys-&gt;UnionOfKeys(object-&gt;GetOwnEnumKeys());</span><br><span class="line">  &#125;</span><br><span class="line">  return keys;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FixedArray* JSObject::GetOwnEnumKeys() &#123;</span><br><span class="line">  FixedArray* keys;</span><br><span class="line">  if (this-&gt;HasEnumCache()) &#123;</span><br><span class="line">    keys = this-&gt;map()-&gt;GetCachedEnumKeys();</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    keys = this-&gt;GetEnumPropertyKeys();</span><br><span class="line">  &#125;</span><br><span class="line">  if (this-&gt;HasFastProperties()) this-&gt;map()-&gt;FillEnumCache(keys);</span><br><span class="line">  return object-&gt;GetElementsAccessor()-&gt;PrependElementIndices(object, keys);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FixedArray* FixedArray::UnionOfKeys(FixedArray* other) &#123;</span><br><span class="line">  int length = this-&gt;length();</span><br><span class="line">  FixedArray* result = FixedArray::Allocate(length + other-&gt;length());</span><br><span class="line">  this-&gt;CopyTo(result, 0);</span><br><span class="line">  int insertion_index = length;</span><br><span class="line">  for (int i = 0; i &lt; other-&gt;length(); i++) &#123;</span><br><span class="line">    String* key = other-&gt;get(i);</span><br><span class="line">    if (other-&gt;IndexOf(key) == -1) &#123;</span><br><span class="line">      result-&gt;set(insertion_index, key);</span><br><span class="line">      insertion_index++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  result-&gt;Shrink(insertion_index);</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个简化的C++代码对应于V8中的实现，直到2016年初我们开始研究UnionOfKeys方法。如果仔细观察，您会注意到我们使用了一个简单的算法来排除列表中的重复项，如果原型链上有许多键，则可能会产生较差性能。这就是我们决定在下一节中进行优化的方式。</p>
+<h3 id="Problems-with-for-in"><a href="#Problems-with-for-in" class="headerlink" title="Problems with for-in"></a>Problems with <code>for-in</code></h3><p>正如我们在上一节中已经指出的那样，UnionOfKeys方法具有糟糕的最坏情况性能。它基于这样一个有效的假设：即大多数对象具有快速属性，因此将受益于EnumCache。第二个假设是原型链上只有很少的可枚举属性，限制了查找重复项所花费的时间。但是，如果对象具有缓慢字典属性和原型链上的许多键，则UnionOfKeys将成为瓶颈，因为每次输入<code>for-in</code>时我们都必须收集可枚举的属性名称。</p>
+<p>除了性能问题之外，现有算法还存在另一个问题，即它不符合规范。V8多年来错误地使用了以下示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var o = &#123;</span><br><span class="line">  __proto__ : &#123;b: 3&#125;,</span><br><span class="line">  a: 1</span><br><span class="line">&#125;;</span><br><span class="line">Object.defineProperty(o, &apos;b&apos;, &#123;&#125;);</span><br><span class="line"></span><br><span class="line">for (var k in o) console.log(k);</span><br></pre></td></tr></table></figure>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a</span><br><span class="line">b</span><br></pre></td></tr></table></figure></p>
+<p>也许违反直觉，这应该只打印出a，而不是a和b。如果你回想一下本文开头的规范文本，那么步骤G和J意味着原型链上接收器跟踪属性上的非可枚举属性。</p>
+<p>为了使事情变得更复杂，ES6引入了代理对象，这打破了很多V8代码的假设。要以符合规范的方式实现<code>for-in</code>，我们必须在总共13个不同代理陷阱中触发以下5个。</p>
+<table>
+<thead>
+<tr>
+<th>Internal method</th>
+<th>Handler method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[[GetPrototypeOf]]</td>
+<td>getPrototypeOf</td>
+</tr>
+<tr>
+<td>[[GetOwnProperty]]</td>
+<td>getOwnPropertyDescriptor</td>
+</tr>
+<tr>
+<td>[[HasProperty]]</td>
+<td>has</td>
+</tr>
+<tr>
+<td>[[Get]]</td>
+<td>get</td>
+</tr>
+<tr>
+<td>[[OwnPropertyKeys]]</td>
+<td>ownKeys</td>
+</tr>
+</tbody>
+</table>
+<p>这需要原始GetEnumKeys代码的重复版本，该代码试图更紧密地遵循规范示例实现。ES6代理和缺少处理跟踪属性是我们重构如何提取所有keys在2016年初的核心动机。</p>
+<h3 id="The-KeyAccumulator"><a href="#The-KeyAccumulator" class="headerlink" title="The KeyAccumulator"></a>The KeyAccumulator</h3><p>我们引入一个单独的辅助类KeyAccumulator，它处理收集的<code>for-in</code>键的复杂性。随着ES6规范的发展，像Object.keys或Reflect.ownKeys这样的新特性需要它们自己的略微修改收集keys。通过使用单一的可配置位置，我们可以提高<code>for-in</code>的性能并避免重复代码。KeyAccumulator由一个快速部分组成，它只支持一组有限的操作，但能够非常有效地完成这些操作。慢累加器支持所有复杂的情况，如ES6代理。</p>
+<p><img src="https://v8.dev/_img/fast-for-in/keyaccumulator.png" alt></p>
+<p> 为了正确过滤跟踪属性，我们必须维护一个单独的非可枚举属性列表，这些属性是我们到目前为止所看到的不可枚举的属性。出于性能原因，我们只有在弄清楚对象的原型链上有可枚举的属性之后才这样做。</p>
+<h3 id="Performance-improvements"><a href="#Performance-improvements" class="headerlink" title="Performance improvements"></a>Performance improvements</h3><p>有了KeyAccumulator，一些模式就变得可行了。第一步是避免原始UnionOfKeys方法的嵌套循环，这种循环会导致缓慢的角点情况。在第二步中，我们执行了更详细的预检查，以利用现有的EnumCaches并避免不必要的复制步骤。</p>
+<p>为了说明符合规范的实现更快，让我们看看以下四个不同的对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">var fastProperties = &#123;</span><br><span class="line">  __proto__ : null,</span><br><span class="line">  &apos;property 1&apos;: 1,</span><br><span class="line">  …</span><br><span class="line">  &apos;property 10&apos;: n</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var fastPropertiesWithPrototype = &#123;</span><br><span class="line">  &apos;property 1&apos;: 1,</span><br><span class="line">  …</span><br><span class="line">  &apos;property 10&apos;: n</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var slowProperties = &#123;</span><br><span class="line">  __proto__ : null,</span><br><span class="line">  &apos;dummy&apos;: null,</span><br><span class="line">  &apos;property 1&apos;: 1,</span><br><span class="line">  …</span><br><span class="line">  &apos;property 10&apos;: n</span><br><span class="line">&#125;;</span><br><span class="line">delete slowProperties[&apos;dummy&apos;]</span><br><span class="line"></span><br><span class="line">var elements = &#123;</span><br><span class="line">  __proto__: null,</span><br><span class="line">  &apos;1&apos;: 1,</span><br><span class="line">  …</span><br><span class="line">  &apos;10&apos;: n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下图比较了在没有优化编译器的情况下，在紧密循环中运行<code>for-in</code>循环一百万次的原始性能。</p>
+<p><img src="https://v8.dev/_img/fast-for-in/keyaccumulator-benchmark.png" alt></p>
+<p>正如我们介绍的那样，这些改进在维基百科和Facebook上变得非常明显。</p>
+<p><img src="https://v8.dev/_img/fast-for-in/wikipedia.png" alt></p>
+<p><img src="https://v8.dev/_img/fast-for-in/facebook.png" alt></p>
+<p>除了Chrome 51中的初步改进之外，第二次性能调整还带来了另一项重大改进。下图显示了我们在Facebook页面启动期间花在脚本上的总时间的跟踪数据。V8的37937版本的选定范围相当于额外4％的性能提升！</p>
+<p><img src="https://v8.dev/_img/fast-for-in/fastkeyaccumulator.png" alt="avatar"></p>
+<p>为了强调改进<code>for-in</code>的重要性，我们依赖于我们在2016年建立的工具中的数据，这些数据允许我们在一组网站上提取V8测量值。下表显示了Chrome 49在大约<a href="https://v8.dev/blog/real-world-performance" target="_blank" rel="noopener">25个代表性真实网站</a>上的V8 C++入口点（运行时函数和内置函数）所花费的相对时间。</p>
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th>Name</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CreateObjectLiteral</td>
+<td>1.10%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>NewObject</td>
+<td>0.90%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>KeyedGetProperty</td>
+<td>0.70%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>GetProperty</td>
+<td>0.60%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>ForInEnumerate</td>
+<td>0.60%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>SetProperty</td>
+<td>0.50%</td>
+</tr>
+<tr>
+<td>7</td>
+<td>StringReplaceGlobalRegExpWithString</td>
+<td>0.30%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>HandleApiCallConstruct</td>
+<td>0.30%</td>
+</tr>
+<tr>
+<td>9</td>
+<td>RegExpExec</td>
+<td>0.30%</td>
+</tr>
+<tr>
+<td>10</td>
+<td>ObjectProtoToString</td>
+<td>0.30%</td>
+</tr>
+<tr>
+<td>11</td>
+<td>ArrayPush</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>12</td>
+<td>NewClosure</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>13</td>
+<td>NewClosure_Tenured</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>14</td>
+<td>ObjectDefineProperty</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>15</td>
+<td>HasProperty</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>16</td>
+<td>StringSplit</td>
+<td>0.20%</td>
+</tr>
+<tr>
+<td>17</td>
+<td>ForInFilter</td>
+<td>0.10%</td>
+</tr>
+</tbody>
+</table>
+<p>对<code>for-in</code>最重要的帮助在第5和第17位，平均占网站脚本总时间的0.7％。在Chrome 57中，ForInEnumerate已降至总时间的0.2％，ForInFilter由于汇编程序写入的快速路径而低于测量阈值。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/JackFei">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio>
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>

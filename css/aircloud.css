@@ -1188,7 +1188,11 @@ pre .javascript .function {
   font-size: 14px;
 }
 .toc-article li a span {
-  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  width: 210px;
 }
 .toc-article li.active {
   border-left: 2px solid #4990E2;
