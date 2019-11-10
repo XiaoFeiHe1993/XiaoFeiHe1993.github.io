@@ -11,7 +11,7 @@
 
     <title>
         
-        小程序云开发总结 - undefined
+        webpack plugin清理项目无用文件 - undefined
         
     </title>
 
@@ -83,7 +83,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#官方文档："><span class="toc-text">官方文档：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开源项目参考："><span class="toc-text">开源项目参考：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#云开发框架："><span class="toc-text">云开发框架：</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插件"><span class="toc-text">插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意"><span class="toc-text">注意</span></a></li></ol>
 </div>
 
 <!-- <script src="https://utteranc.es/client.js"
@@ -121,15 +121,15 @@
 
 <div class="post-container">
     <div class="post-title">
-        小程序云开发总结
+        webpack plugin清理项目无用文件
     </div>
 
     <div class="post-meta">
-        <span class="attr">发布于：<span>2019-07-04 20:34:12</span></span>
+        <span class="attr">发布于：<span>2019-11-10 09:13:46</span></span>
         
         <span class="attr">标签：/
         
-        <a class="tag" href="/tags/#小程序" title="小程序">小程序</a>
+        <a class="tag" href="/tags/#wepack" title="wepack">wepack</a>
         <span>/</span>
         
         
@@ -139,9 +139,14 @@
 
     </div>
     <div class="post-content no-indent">
-        <h3 id="官方文档："><a href="#官方文档：" class="headerlink" title="官方文档："></a>官方文档：</h3><p><a href="https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html" target="_blank" rel="noopener">https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html</a></p>
-<h3 id="开源项目参考："><a href="#开源项目参考：" class="headerlink" title="开源项目参考："></a>开源项目参考：</h3><p>1.<a href="https://github.com/MarchYuanx/study163" target="_blank" rel="noopener">https://github.com/MarchYuanx/study163</a><br>2.<a href="https://github.com/AmosXu/library-mini-program" target="_blank" rel="noopener">https://github.com/AmosXu/library-mini-program</a><br>3.<a href="https://github.com/Tencent-CloudEDU/WXCloud-bookcase" target="_blank" rel="noopener">https://github.com/Tencent-CloudEDU/WXCloud-bookcase</a><br>4.<a href="https://github.com/ksky521/fresh-weather" target="_blank" rel="noopener">https://github.com/ksky521/fresh-weather</a></p>
-<h3 id="云开发框架："><a href="#云开发框架：" class="headerlink" title="云开发框架："></a>云开发框架：</h3><p><a href="https://taro-docs.jd.com/taro/docs/wxcloud.html" target="_blank" rel="noopener">https://taro-docs.jd.com/taro/docs/wxcloud.html</a></p>
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>对于经过数次迭代，经过无数人接手的项目，项目中无用的功能，无用的文件肯定在项目中遍布。对于这样一个项目我们做些整理、升级也是很有必要的。清理这些无用文件我们就可以使用webpack plugin，因为webpack打包是根据依赖树，使用到的文件就会在依赖树对象中，未使用到的则不会出现。</p>
+<h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>这里介绍两个插件：</p>
+<p><a href="https://github.com/Viyozc/useless-files-webpack-plugin" target="_blank" rel="noopener">useless-files-webpack-plugin</a></p>
+<p><a href="https://github.com/tomchentw/unused-files-webpack-plugin" target="_blank" rel="noopener">unused-files-webpack-plugin</a></p>
+<p>使用也很简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i --save-dev useless-files-webpack-plugin</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">const UselessFile = require(&apos;useless-files-webpack-plugin&apos;)</span><br><span class="line"></span><br><span class="line">plugins: [</span><br><span class="line">  new UselessFile(&#123;</span><br><span class="line">    root: &apos;./src&apos;, // 项目目录</span><br><span class="line">    out?: &apos;./fileList.json&apos;, // 输出文件列表</span><br><span class="line">    out?: (files) =&gt; deal(files), // 或者回调处理</span><br><span class="line">    clean?: false // 删除文件,</span><br><span class="line">    exclude?: path // 排除文件列表, 格式为文件路径数组</span><br><span class="line">  &#125;)</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>会清理一些使用到的文件，可以按src、components等目录逐步清理，清理的时候运行项目进行一定的测试。</p>
 
         
         <br>
