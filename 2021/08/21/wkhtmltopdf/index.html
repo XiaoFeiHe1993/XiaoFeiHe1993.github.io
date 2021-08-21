@@ -57,25 +57,25 @@
             <li>
                 <a href="/">
                     <i class="iconfont icon-shouye1"></i>
-                    <span>主页</span>
+                    <span>HOME</span>
                 </a>
             </li>
             <li>
                 <a href="/tags">
                     <i class="iconfont icon-biaoqian1"></i>
-                    <span>标签</span>
+                    <span>TAGS</span>
                 </a>
             </li>
             <li>
                 <a href="/archives">
                     <i class="iconfont icon-guidang2"></i>
-                    <span>存档</span>
+                    <span>ARCHIVES</span>
                 </a>
             </li>
             <li>
                 <a href="/about/">
                     <i class="iconfont icon-guanyu2"></i>
-                    <span>关于</span>
+                    <span>ABOUT</span>
                 </a>
             </li>
             
@@ -102,7 +102,7 @@
         <div class="search-input">
             <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
             <input id="search-input">
-            <span id="begin-search">搜索</span>
+            <span id="begin-search">search</span>
         </div>
         <div class="search-result-container" id="search-result-container">
 
@@ -125,20 +125,27 @@
     </div>
 
     <div class="post-meta">
-        <span class="attr">发布于：<span>2021-08-21 20:37:12</span></span>
+        <span class="attr">Post：<span>2021-08-21 20:37:12</span></span>
+        
+        <span class="attr">Tags：/
+        
+        <a class="tag" href="/tags/#wkhtmltopdf" title="wkhtmltopdf">wkhtmltopdf</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#echart" title="echart">echart</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#node-canvas" title="node-canvas">node-canvas</a>
+        <span>/</span>
         
         
-        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+        </span>
+        <span class="attr">Visit：<span id="busuanzi_value_page_pv"></span>
 </span>
 
     </div>
     <div class="post-content no-indent">
-        <ul>
-<li>wkhtmltopdf</li>
-<li>echart</li>
-<li>node-canvas</li>
-</ul>
-<h3 id="问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。"><a href="#问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。" class="headerlink" title="问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。"></a>问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import * as echarts from &apos;echarts&apos;</span><br><span class="line">import &#123; getChartOptions1 &#125; from &apos;@/utils/index&apos;</span><br><span class="line">const Canvas = require(&apos;canvas&apos;)</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  async asyncData (&#123; $axios, query &#125;) &#123;</span><br><span class="line">    const options1 = getChartOptions1()</span><br><span class="line">    // 在服务端生成canvas节点</span><br><span class="line">    const canvas = new Canvas.Canvas(parseInt(986, 10), parseInt(380, 10))</span><br><span class="line">    echarts.setCanvasCreator(function () &#123;</span><br><span class="line">      return canvas</span><br><span class="line">    &#125;)</span><br><span class="line">    // 初始化echart</span><br><span class="line">    const chart = echarts.init(canvas)</span><br><span class="line">    // 生成chart1</span><br><span class="line">    chart.setOption(options1)</span><br><span class="line">    const imgChart1 = `data:image/png;base64,$&#123;chart.getDom().toBuffer().toString(&apos;base64&apos;)&#125;`</span><br><span class="line"></span><br><span class="line">    return &#123; imgChart1 &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+        <h3 id="问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。"><a href="#问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。" class="headerlink" title="问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。"></a>问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import * as echarts from &apos;echarts&apos;</span><br><span class="line">import &#123; getChartOptions1 &#125; from &apos;@/utils/index&apos;</span><br><span class="line">const Canvas = require(&apos;canvas&apos;)</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  async asyncData (&#123; $axios, query &#125;) &#123;</span><br><span class="line">    const options1 = getChartOptions1()</span><br><span class="line">    // 在服务端生成canvas节点</span><br><span class="line">    const canvas = new Canvas.Canvas(parseInt(986, 10), parseInt(380, 10))</span><br><span class="line">    echarts.setCanvasCreator(function () &#123;</span><br><span class="line">      return canvas</span><br><span class="line">    &#125;)</span><br><span class="line">    // 初始化echart</span><br><span class="line">    const chart = echarts.init(canvas)</span><br><span class="line">    // 生成chart1</span><br><span class="line">    chart.setOption(options1)</span><br><span class="line">    const imgChart1 = `data:image/png;base64,$&#123;chart.getDom().toBuffer().toString(&apos;base64&apos;)&#125;`</span><br><span class="line"></span><br><span class="line">    return &#123; imgChart1 &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 <p>node-canvas在服务端运行，需要根据不同操作系统配置环境，可以按照<a href="https://github.com/Automattic/node-canvas/#compiling" target="_blank" rel="noopener">官方步骤配置</a></p>
 <p><a href="https://blog.csdn.net/wengye1990/article/details/71120743" target="_blank" rel="noopener">相似问题参考</a></p>
 <p>使用node-canvas可能会遇到babel配置问题，可以参考</p>
