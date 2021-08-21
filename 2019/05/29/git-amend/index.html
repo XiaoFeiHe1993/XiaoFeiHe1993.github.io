@@ -6,140 +6,80 @@
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content>
+    <title>xiaofeihe - </title>
+    
+      <link rel="icon" href="/img/favicon.ico">
+    
     <meta name="keyword" content>
-    <link rel="shortcut icon" href="/img/favicon.ico">
-
-    <title>
-        
-        修改git commit历史记录 - undefined
-        
-    </title>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/aircloud.css">
-    <link rel="stylesheet" href="/css/gitment.css">
-    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
-    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
-    <!-- ga & ba script hoook -->
-    <script></script>
-    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
+
 <body>
-
-<div class="site-nav-toggle" id="site-nav-toggle">
-    <button>
-        <span class="btn-bar"></span>
-        <span class="btn-bar"></span>
-        <span class="btn-bar"></span>
-    </button>
-</div>
-
-<div class="index-about">
-    <i>  </i>
-</div>
-
-<div class="index-container">
-    
-    <div class="index-left">
-        
-<div class="nav" id="nav">
-    <div class="avatar-name">
-        <div class="avatar">
-            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
-        </div>
-        <div class="name">
-            <i>xiaofeihe</i>
-        </div>
+  <div class="loading-wrapper">
+    <div class="loading">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
-    <div class="contents" id="nav-content">
-        <ul>
-            <li>
-                <a href="/">
-                    <i class="iconfont icon-shouye1"></i>
-                    <span>HOME</span>
-                </a>
-            </li>
-            <li>
-                <a href="/tags">
-                    <i class="iconfont icon-biaoqian1"></i>
-                    <span>TAGS</span>
-                </a>
-            </li>
-            <li>
-                <a href="/archives">
-                    <i class="iconfont icon-guidang2"></i>
-                    <span>ARCHIVES</span>
-                </a>
-            </li>
-            <li>
-                <a href="/about/">
-                    <i class="iconfont icon-guanyu2"></i>
-                    <span>ABOUT</span>
-                </a>
-            </li>
-            
-        </ul>
-    </div>
-    
-        <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一步：执行git-rebase-i命令，这里3表示倒数第几次提交"><span class="toc-text">第一步：执行git rebase -i命令，这里3表示倒数第几次提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。"><span class="toc-text">第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三步：执行git-commit命令，会重新进入vim编辑状态"><span class="toc-text">第三步：执行git commit命令，会重新进入vim编辑状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第四步：执行git-rebase-–continue"><span class="toc-text">第四步：执行git rebase –continue</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第五步：执行git-push-f（这一步是为了提交到服务器，覆盖原有记录，-f强制覆盖）"><span class="toc-text">第五步：执行git push -f（这一步是为了提交到服务器，覆盖原有记录，-f强制覆盖）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#附注1：如何进入vim编辑状态"><span class="toc-text">附注1：如何进入vim编辑状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#附注2：如何退出编辑状态并保存"><span class="toc-text">附注2：如何退出编辑状态并保存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考："><span class="toc-text">参考：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果对你有帮助，可以请我喝杯咖啡"><span class="toc-text">如果对你有帮助，可以请我喝杯咖啡</span></a></li></ol>
-</div>
-
-<!-- <script src="https://utteranc.es/client.js"
-    repo="JackFei/JackFei.github.io"
-    issue-term="pathname"
-    theme="github-light"
-    crossorigin="anonymous"
-    async>
-</script> -->
-    
-</div>
-
-
-<div class="search-field" id="search-field">
-    <div class="search-container">
-        <div class="search-input">
-            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
-            <input id="search-input">
-            <span id="begin-search">search</span>
-        </div>
-        <div class="search-result-container" id="search-result-container">
-
-        </div>
-    </div>
-</div>
-        <div class="index-about-mobile">
-            <i>  </i>
-        </div>
-    </div>
-    
-    <div class="index-middle">
-        <!-- Main Content -->
-        
-
-
-<div class="post-container">
-    <div class="post-title">
-        修改git commit历史记录
-    </div>
-
-    <div class="post-meta">
-        <span class="attr">Post：<span>2019-05-29 21:48:59</span></span>
-        
-        <span class="attr">Tags：/
-        
-        <a class="tag" href="/tags/#git" title="git">git</a>
-        <span>/</span>
-        
-        
+  </div>
+  <div class="page">
+    <div class="head">
+      <header class="head-header">
+  <h1 class="head-authorH">
+    <a href="/" class="head-authorLink">
+      xiaofeihe</a>
+  </h1>
+  <div class="head-right">
+    <!-- <div class="head-search">
+      <input class="head-searchK"></input>
+      <span class="head-searchT">
         </span>
-        <span class="attr">Visit：<span id="busuanzi_value_page_pv"></span>
-</span>
+    </div> -->
+    <button class="barWrap" id="barWrap-toggle">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="head-about" id="head-about">
+      
+      <a class="head-aboutLink" href="/about">
+        About</a>
+      
+    </div>
+  </div>
+</header>
+    </div>
+    <div class="main">
+      <div class="barShow-head" id="barShow">
+  <ul class="barShow-ul">
+    
+  </ul>
+</div>
+      <article class="post" id="post">
+  <header class="post-head">
+    <h1 class="post-title">
+      <a class="title" href="/2019/05/29/git-amend/">
+        修改git commit历史记录
+      </a>
+    </h1>
+  </header>
+  <div class="post-datetag">
+    <div class="post-date">
+      <time class="post-time" title="2019-05-29 21:48:59" datetime="2019-05-29T13:48:59.000Z" itemprop="datePublished">
+  2019-05-29</time>
+    </div>
+    <div class="post-tag">
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
 
     </div>
-    <div class="post-content no-indent">
-        <h3 id="第一步：执行git-rebase-i命令，这里3表示倒数第几次提交"><a href="#第一步：执行git-rebase-i命令，这里3表示倒数第几次提交" class="headerlink" title="第一步：执行git rebase -i命令，这里3表示倒数第几次提交"></a>第一步：执行git rebase -i命令，这里3表示倒数第几次提交</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure>
+  </div>
+
+  
+
+  <div class="article-entry" itemprop="articleBody">
+    <h3 id="第一步：执行git-rebase-i命令，这里3表示倒数第几次提交"><a href="#第一步：执行git-rebase-i命令，这里3表示倒数第几次提交" class="headerlink" title="第一步：执行git rebase -i命令，这里3表示倒数第几次提交"></a>第一步：执行git rebase -i命令，这里3表示倒数第几次提交</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure>
 <p><img src="/img/git_amend_1.png" alt="avatar"><br>输入完成后会进入vim编辑界面(vim编辑器如何使用后面会介绍到)，我们会看到三次提交记录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pick 08cedab feat: 增加audio</span><br><span class="line">pick 32b887b feat: zhi xing he yi</span><br><span class="line">pick 1c3301a feat: 译文</span><br></pre></td></tr></table></figure></p>
 <h3 id="第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。"><a href="#第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。" class="headerlink" title="第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。"></a>第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。</h3><p><img src="/img/git_amend_2.png" alt="avatar"></p>
 <h3 id="第三步：执行git-commit命令，会重新进入vim编辑状态"><a href="#第三步：执行git-commit命令，会重新进入vim编辑状态" class="headerlink" title="第三步：执行git commit命令，会重新进入vim编辑状态"></a>第三步：执行git commit命令，会重新进入vim编辑状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
@@ -152,70 +92,46 @@
 <h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><p><a href="https://zhidao.baidu.com/question/689079395155134444.html" target="_blank" rel="noopener">https://zhidao.baidu.com/question/689079395155134444.html</a><br><a href="https://blog.csdn.net/tangkegagalikaiwu/article/details/8542827" target="_blank" rel="noopener">https://blog.csdn.net/tangkegagalikaiwu/article/details/8542827</a></p>
 <h3 id="如果对你有帮助，可以请我喝杯咖啡"><a href="#如果对你有帮助，可以请我喝杯咖啡" class="headerlink" title="如果对你有帮助，可以请我喝杯咖啡"></a>如果对你有帮助，可以请我喝杯咖啡</h3><p><img src="/img/pay.png" alt="avatar"></p>
 
-        
-        <br>
-        <div id="comment-container">
-        </div>
-        <div id="disqus_thread"></div>
+  </div>
+</article>
 
-        <div id="lv-container">
-        </div>
-
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第一步：执行git-rebase-i命令，这里3表示倒数第几次提交"><span class="post-toc-number">1.</span> <span class="post-toc-text">第一步：执行git rebase -i命令，这里3表示倒数第几次提交</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。"><span class="post-toc-number">2.</span> <span class="post-toc-text">第二步：我们把第二次提交记录的pick改成edit，然后退出并保存vim编辑器。</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第三步：执行git-commit命令，会重新进入vim编辑状态"><span class="post-toc-number">3.</span> <span class="post-toc-text">第三步：执行git commit命令，会重新进入vim编辑状态</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第四步：执行git-rebase-–continue"><span class="post-toc-number">4.</span> <span class="post-toc-text">第四步：执行git rebase –continue</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第五步：执行git-push-f（这一步是为了提交到服务器，覆盖原有记录，-f强制覆盖）"><span class="post-toc-number">5.</span> <span class="post-toc-text">第五步：执行git push -f（这一步是为了提交到服务器，覆盖原有记录，-f强制覆盖）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#附注1：如何进入vim编辑状态"><span class="post-toc-number">6.</span> <span class="post-toc-text">附注1：如何进入vim编辑状态</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#附注2：如何退出编辑状态并保存"><span class="post-toc-number">7.</span> <span class="post-toc-text">附注2：如何退出编辑状态并保存</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#参考："><span class="post-toc-number">8.</span> <span class="post-toc-text">参考：</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#如果对你有帮助，可以请我喝杯咖啡"><span class="post-toc-number">9.</span> <span class="post-toc-text">如果对你有帮助，可以请我喝杯咖啡</span></a></li></ol>
+        </nav>
+    </aside>
+   
     </div>
-</div>
+    <footer class="footer-nav">
+      <div class="footer">
+        <span class="footer-msg">
+  
+  
+  
+  
+    <span class="timeDivide">-</span>
+    2021
+  
+  xiaofeihe.&nbsp;
+  Power by
+  <a href="https://hexo.io/" target="_blank" rel="external nofollow">Hexo</a>
+  and
+  <a class="orangelink" href="https://github.com/" target="_blank" rel>
+    hexo-theme-yuzu</a>
+</span>
 
+      </div>
+    </footer>
+    <div class="back-top" id="back-top">
+      <i class="back-top-icon"></i>
     </div>
-    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
-</div>
-
-<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
-</script>
-
-<footer class="footer">
-    <ul class="list-inline text-center">
-        
-        
-
-        
-
-        
-
-        
-        <li>
-            <a target="_blank" href="https://github.com/xiaofeihe1993">
-                            <span class="fa-stack fa-lg">
-                                <i class="iconfont icon-github"></i>
-                            </span>
-            </a>
-        </li>
-        
-
-        
-
-    </ul>
     
-    <p>
-    </p>
-</footer>
-<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
-   <source id="mp3" src="/audio/一休歌.mp3">
-</audio> -->
-<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
 
+  <script src="/js/jquery/jquery-3.1.1.min.js"></script>
 
+    <script src="/js/theme.js"></script>
+    <script src="/js/index.js"></script>
+
+  </div>
 </body>
-
-<script>
-    // We expose some of the variables needed by the front end
-    window.hexo_search_path = ""
-    window.hexo_root = "/"
-    window.isPost = true
-</script>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-<script src="/js/index.js"></script>
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
-
-
-</html>
