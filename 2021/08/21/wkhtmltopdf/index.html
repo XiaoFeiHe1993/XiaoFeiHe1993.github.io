@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        wkhtmltopdf - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>xiaofeihe</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。"><span class="toc-text">问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题2-table表格分页之后出现多余的表头，解决方法"><span class="toc-text">问题2. table表格分页之后出现多余的表头，解决方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题3-对于不想tr分页被分割在两页时，可以设置"><span class="toc-text">问题3. 对于不想tr分页被分割在两页时，可以设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题4-需要pdf在章节强制分页，可以在需要分页的地方插入一个div。"><span class="toc-text">问题4. 需要pdf在章节强制分页，可以在需要分页的地方插入一个div。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题5-对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt-js来进行服务端渲染。"><span class="toc-text">问题5. 对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt.js来进行服务端渲染。</span></a></li></ol>
+</div>
+
+<!-- <script src="https://utteranc.es/client.js"
+    repo="JackFei/JackFei.github.io"
+    issue-term="pathname"
+    theme="github-light"
+    crossorigin="anonymous"
+    async>
+</script> -->
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        wkhtmltopdf
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2021-08-21 20:37:12</span></span>
+        
+        
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <ul>
+<li>wkhtmltopdf</li>
+<li>echart</li>
+<li>node-canvas</li>
+</ul>
+<h3 id="问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。"><a href="#问题1-wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt-js运行在服务端的生命周期。" class="headerlink" title="问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。"></a>问题1. wkhtmltopdf生成pdf过程中出现echart无法渲染问题，思路就是在服务端渲染echart图表，以base64形式展示到img标签上。asyncData是nuxt.js运行在服务端的生命周期。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import * as echarts from &apos;echarts&apos;</span><br><span class="line">import &#123; getChartOptions1 &#125; from &apos;@/utils/index&apos;</span><br><span class="line">const Canvas = require(&apos;canvas&apos;)</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  async asyncData (&#123; $axios, query &#125;) &#123;</span><br><span class="line">    const options1 = getChartOptions1()</span><br><span class="line">    // 在服务端生成canvas节点</span><br><span class="line">    const canvas = new Canvas.Canvas(parseInt(986, 10), parseInt(380, 10))</span><br><span class="line">    echarts.setCanvasCreator(function () &#123;</span><br><span class="line">      return canvas</span><br><span class="line">    &#125;)</span><br><span class="line">    // 初始化echart</span><br><span class="line">    const chart = echarts.init(canvas)</span><br><span class="line">    // 生成chart1</span><br><span class="line">    chart.setOption(options1)</span><br><span class="line">    const imgChart1 = `data:image/png;base64,$&#123;chart.getDom().toBuffer().toString(&apos;base64&apos;)&#125;`</span><br><span class="line"></span><br><span class="line">    return &#123; imgChart1 &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>node-canvas在服务端运行，需要根据不同操作系统配置环境，可以按照<a href="https://github.com/Automattic/node-canvas/#compiling" target="_blank" rel="noopener">官方步骤配置</a></p>
+<p><a href="https://blog.csdn.net/wengye1990/article/details/71120743" target="_blank" rel="noopener">相似问题参考</a></p>
+<p>使用node-canvas可能会遇到babel配置问题，可以参考</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [&quot;@babel/preset-env&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题2-table表格分页之后出现多余的表头，解决方法"><a href="#问题2-table表格分页之后出现多余的表头，解决方法" class="headerlink" title="问题2. table表格分页之后出现多余的表头，解决方法"></a>问题2. table表格分页之后出现多余的表头，解决方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">thead &#123;</span><br><span class="line">  display: table-row-group;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题3-对于不想tr分页被分割在两页时，可以设置"><a href="#问题3-对于不想tr分页被分割在两页时，可以设置" class="headerlink" title="问题3. 对于不想tr分页被分割在两页时，可以设置"></a>问题3. 对于不想tr分页被分割在两页时，可以设置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tr &#123;</span><br><span class="line">  page-break-inside: avoid !important;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题4-需要pdf在章节强制分页，可以在需要分页的地方插入一个div。"><a href="#问题4-需要pdf在章节强制分页，可以在需要分页的地方插入一个div。" class="headerlink" title="问题4. 需要pdf在章节强制分页，可以在需要分页的地方插入一个div。"></a>问题4. 需要pdf在章节强制分页，可以在需要分页的地方插入一个div。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">.divider &#123;</span><br><span class="line">  page-break-before: always;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题5-对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt-js来进行服务端渲染。"><a href="#问题5-对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt-js来进行服务端渲染。" class="headerlink" title="问题5. 对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt.js来进行服务端渲染。"></a>问题5. 对于Vue、React单页应用项目可能存在无法渲染生成pdf问题，也可能是wkhtmltopdf内核版本问题，不过试了公司好几个项目都不行，最后使用了nuxt.js来进行服务端渲染。</h3>
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+</div>
+
+<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
+</script>
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/xiaofeihe1993">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio> -->
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>

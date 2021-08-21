@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        译文：Improving DataView performance in V8 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>xiaofeihe</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Improving-DataView-performance-in-V8"><span class="toc-text">Improving DataView performance in V8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Background"><span class="toc-text">Background</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Legacy-runtime-implementation"><span class="toc-text">Legacy runtime implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Improving-baseline-performance"><span class="toc-text">Improving baseline performance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimizing-for-TurboFan"><span class="toc-text">Optimizing for TurboFan</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Further-TurboFan-optimizations"><span class="toc-text">Further TurboFan optimizations</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Impact"><span class="toc-text">Impact</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果对你有帮助，可以请我喝杯咖啡"><span class="toc-text">如果对你有帮助，可以请我喝杯咖啡</span></a></li></ol>
+</div>
+
+<!-- <script src="https://utteranc.es/client.js"
+    repo="JackFei/JackFei.github.io"
+    issue-term="pathname"
+    theme="github-light"
+    crossorigin="anonymous"
+    async>
+</script> -->
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        译文：Improving DataView performance in V8
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-05-25 09:40:44</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#译文" title="译文">译文</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>原文链接：<a href="https://v8.dev/blog/dataview" target="_blank" rel="noopener">https://v8.dev/blog/dataview</a></p>
+<h3 id="Improving-DataView-performance-in-V8"><a href="#Improving-DataView-performance-in-V8" class="headerlink" title="Improving DataView performance in V8"></a>Improving DataView performance in V8</h3><p>DataViews是在JavaScript中进行底层内存访问的两种可能方法之一，另一种是TypedArray。到目前为止，与V8中的TypedArray相比，DataView的优化程度要少得多，导致在图形密集型工作负载或解码/编码二进制数据等任务上的性能降低。造成这种情况的主要原因是历史上的选择，比如asm.js选择TypedArray而不是DataViews，因此引擎被激励关注TypedArray的性能。</p>
+<p>由于性能损失，JavaScript开发人员(如GoogleMaps团队)决定避免使用DataViews，转而使用TypedArray，而代价是增加了代码复杂性。本文解释了我们如何在V8 v6.9中优化DataView性能来匹配(甚至超过)等价的TypedArray代码，从而有效地使DataView可用于性能关键的现实世界应用程序。</p>
+<h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><p>自ES 2015引入以来，JavaScript一直支持在名为ArrayBuffers的原始二进制缓冲区中读取和写入数据。但不能直接访问ArrayBuffers，相反，程序必须使用所谓的array buffer view对象，该对象可以是DataView，也可以是TypedArray。</p>
+<p>TypedArray允许程序以统一类型值(如Int16Array或Float32Array)的数组形式访问缓冲区。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const buffer = new ArrayBuffer(32);</span><br><span class="line">const array = new Int16Array(buffer);</span><br><span class="line"></span><br><span class="line">for (let i = 0; i &lt; array.length; i++) &#123;</span><br><span class="line">  array[i] = i * i;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(array);</span><br><span class="line">// → [0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225]</span><br></pre></td></tr></table></figure>
+<p>另一方面，DataViews允许更细粒度的数据访问。它们允许程序员通过为每个Number类型提供专门的getter和setter来选择从缓冲区读取和写入的值的类型，这使得它们在序列化数据结构时非常有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const buffer = new ArrayBuffer(32);</span><br><span class="line">const view = new DataView(buffer);</span><br><span class="line"></span><br><span class="line">const person = &#123; age: 42, height: 1.76 &#125;;</span><br><span class="line"></span><br><span class="line">view.setUint8(0, person.age);</span><br><span class="line">view.setFloat64(1, person.height);</span><br><span class="line"></span><br><span class="line">console.log(view.getUint8(0)); // Expected output: 42</span><br><span class="line">console.log(view.getFloat64(1)); // Expected output: 1.76</span><br></pre></td></tr></table></figure>
+<p>此外，DataViews还允许选择数据存储的功能，这在从外部源(如网络、文件或GPU)接收数据时非常有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const buffer = new ArrayBuffer(32);</span><br><span class="line">const view = new DataView(buffer);</span><br><span class="line"></span><br><span class="line">view.setInt32(0, 0x8BADF00D, true); // Little-endian write.</span><br><span class="line">console.log(view.getInt32(0, false)); // Big-endian read.</span><br><span class="line">// Expected output: 0x0DF0AD8B (233876875)</span><br></pre></td></tr></table></figure>
+<p>一个高效的DataView实现已经是很长时间以来的一个特性请求(请参阅5年前的这个bug报告)，我们很高兴地宣布DataView的性能是相当好的！</p>
+<h3 id="Legacy-runtime-implementation"><a href="#Legacy-runtime-implementation" class="headerlink" title="Legacy runtime implementation"></a>Legacy runtime implementation</h3><p>直到最近，DataView方法以前在V8中被实现为内置的C+运行时函数。这非常昂贵，因为每次调用都需要从JavaScript到C++(和Back)的转换。</p>
+<p>为了研究此实现所产生的实际性能成本，我们建立了一个性能基准，将原生DataView getter实现与模拟DataView行为的JavaScript包装进行比较。此包装器使用Uint8Array从基础缓冲区逐字节读取数据，然后从这些字节计算返回值。例如，下面是读取小Endian 32位无符号整数值的函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function LittleEndian(buffer) &#123; // Simulate little-endian DataView reads.</span><br><span class="line">  this.uint8View_ = new Uint8Array(buffer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LittleEndian.prototype.getUint32 = function(byteOffset) &#123;</span><br><span class="line">  return this.uint8View_[byteOffset] |</span><br><span class="line">    (this.uint8View_[byteOffset + 1] &lt;&lt; 8) |</span><br><span class="line">    (this.uint8View_[byteOffset + 2] &lt;&lt; 16) |</span><br><span class="line">    (this.uint8View_[byteOffset + 3] &lt;&lt; 24);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>TypedArray已经在V8中得到了很大的优化，所以它们代表了我们想要达到的性能目标。</p>
+<p><img src="https://v8.dev/_img/dataview/dataview-original.svg" alt="avatar"></p>
+<p>我们的基准测试显示，本机DataView getter性能比基于Uint8Array的包装器慢4倍，无论是大端读取还是小端点读取。</p>
+<h3 id="Improving-baseline-performance"><a href="#Improving-baseline-performance" class="headerlink" title="Improving baseline performance"></a>Improving baseline performance</h3><p>我们改进DataView对象性能的第一步是将实现从C++运行时移到CodeStubAssembler(也称为CSA)。CSA是一种可移植的汇编语言，它允许我们直接用TurboFan的机器级中间表示(IR)编写代码，并使用它来实现V8的JavaScript标准库的优化部分。在CSA中重写代码完全绕过了对C+的调用，并通过利用TurboFan的后端生成高效的机器代码。</p>
+<p>然而，手工编写CSA代码很麻烦。CSA中的控制流与程序集中的控制流非常相似，使用显式标签和Gotos，这使得代码很难一眼就读懂。</p>
+<p>为了使开发人员更容易对V8中的优化JavaScript标准库做出贡献，并提高可读性和可维护性，我们开始设计一种名为V8 TORQUE的新语言，该语言可以编译成CSA。扭矩的目标是抽象出低层次的细节，使csa代码更难编写和维护，同时保留相同的性能配置文件。</p>
+<p>重写DataView代码是一个很好的机会，可以开始为新代码使用TORQUE，并有助于为TORQUE开发人员提供大量关于该语言的反馈。这就是DataView的getUint 32()方法的样子，用TORQUE编写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">macro LoadDataViewUint32(buffer: JSArrayBuffer, offset: intptr,</span><br><span class="line">                    requested_little_endian: bool,</span><br><span class="line">                    signed: constexpr bool): Number &#123;</span><br><span class="line">  let data_pointer: RawPtr = buffer.backing_store;</span><br><span class="line"></span><br><span class="line">  let b0: uint32 = LoadUint8(data_pointer, offset);</span><br><span class="line">  let b1: uint32 = LoadUint8(data_pointer, offset + 1);</span><br><span class="line">  let b2: uint32 = LoadUint8(data_pointer, offset + 2);</span><br><span class="line">  let b3: uint32 = LoadUint8(data_pointer, offset + 3);</span><br><span class="line">  let result: uint32;</span><br><span class="line"></span><br><span class="line">  if (requested_little_endian) &#123;</span><br><span class="line">    result = (b3 &lt;&lt; 24) | (b2 &lt;&lt; 16) | (b1 &lt;&lt; 8) | b0;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    result = (b0 &lt;&lt; 24) | (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) | b3;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return convert&lt;Number&gt;(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将DataView方法移动到TORQUE已经显示性能有3×改进，但还没有完全匹配基于Uint8Array的包装器性能。</p>
+<p><img src="https://v8.dev/_img/dataview/dataview-torque.svg" alt="avatar"></p>
+<h3 id="Optimizing-for-TurboFan"><a href="#Optimizing-for-TurboFan" class="headerlink" title="Optimizing for TurboFan"></a>Optimizing for TurboFan</h3><p>当JavaScript代码变热时，我们使用TurboFan优化编译器对其进行编译，以便生成比解释字节码运行效率更高的优化机器代码。</p>
+<p>TurboFan的工作方式是将传入的JavaScript代码转换为内部图形表示(更准确地说，是一个“节点之海”)。它从与JavaScript操作和语义相匹配的高级节点开始，并逐步将它们细化为低级和低级节点，直到最终生成机器代码。</p>
+<p>特别是，函数调用(例如调用DataView方法之一)在内部表示为JSCall节点，该节点最终归结为生成的机器代码中的实际函数调用。</p>
+<p>然而，TurboFan允许我们检查jscall节点是否实际上是对已知函数的调用。例如，内置函数之一，并在IR中内联此节点。这意味着复杂的JSCall在编译时被表示函数的子图所取代。这允许TurboFan在以后的过程中优化函数的内部，作为更广泛的上下文的一部分，而不是它自己，最重要的是摆脱昂贵的函数调用。</p>
+<p><img src="https://v8.dev/_img/dataview/dataview-turbofan-initial.svg" alt="avatar"></p>
+<p>实现TurboFan内联最终使我们能够与我们的Uint8Array包装器的性能相匹配，甚至超过它的性能，其速度是以前C+实现速度的8倍。</p>
+<h3 id="Further-TurboFan-optimizations"><a href="#Further-TurboFan-optimizations" class="headerlink" title="Further TurboFan optimizations"></a>Further TurboFan optimizations</h3><p>看看TurboFan在内联DataView方法之后生成的机器代码，仍然有一些改进的余地。这些方法的第一个实现非常接近于标准，并在规范指示时抛出错误(例如，当试图读取或写入基础ArrayBuffer的边界时)。</p>
+<p>然而，我们用TurboFan编写的代码意味着要尽可能快地对常见的热情况进行优化-它不需要支持所有可能的边缘情况。通过删除对这些错误的所有复杂处理，并在需要抛出时将优化降回基线扭矩实现，我们能够将生成代码的大小减少35%左右，从而产生相当明显的加速，以及相当简单的涡扇代码。</p>
+<p>跟进这一想法，尽可能专门在TurboFan，我们也取消了对指数或偏移太大(SMI范围之外)的TurboFan优化代码的支持。这使我们能够避免处理浮点数64算法，这是不适合32位值的偏移量所需的，并且避免在堆中存储大整数。</p>
+<p>与最初的TurboFan实现相比，这是DataView基准分数的两倍多。DataViews现在的速度是Uint8Array包装器的3倍，大约是原始DataView实现的16倍！</p>
+<p><img src="https://v8.dev/_img/dataview/dataview-turbofan-final.svg" alt="avatar"></p>
+<h3 id="Impact"><a href="#Impact" class="headerlink" title="Impact"></a>Impact</h3><p>我们已经在我们自己的基准之上，在一些实际的例子上评估了新的实现对性能的影响。</p>
+<p>在从JavaScript解码以二进制格式编码的数据时，通常使用DataViews。例如二进制格式FBX，一种用于交换3D动画的格式。我们已经测试了流行的Three.js JavaScript 3D库的FBX加载程序，并测量了它的执行时间减少了10%(约80 ms)。</p>
+<p>我们比较了DataViews与TypedArray的总体性能。我们发现，我们的新DataView实现在访问本机endianness(Intel处理器上的小Endian)中对齐的数据时，提供了与TypedArray几乎相同的性能，弥补了很大的性能差距，使DataViews成为V8中的一个实际选择。</p>
+<p><img src="https://v8.dev/_img/dataview/dataview-vs-typedarray.svg" alt="avatar"></p>
+<p>我们希望您现在能够在有意义的地方开始使用DataViews，而不是依赖TypedArray shims。请将您使用DataView的问题反馈给我们！</p>
+<h3 id="如果对你有帮助，可以请我喝杯咖啡"><a href="#如果对你有帮助，可以请我喝杯咖啡" class="headerlink" title="如果对你有帮助，可以请我喝杯咖啡"></a>如果对你有帮助，可以请我喝杯咖啡</h3><p><img src="/img/pay.png" alt="avatar"></p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+</div>
+
+<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
+</script>
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/xiaofeihe1993">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio> -->
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>

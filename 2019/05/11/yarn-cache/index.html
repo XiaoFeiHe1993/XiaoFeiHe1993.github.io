@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Yarn cache之坑 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>xiaofeihe</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、yarn-cache-dir"><span class="toc-text">一、yarn cache dir</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、yarn-cache-clean-lt-module-name…-gt"><span class="toc-text">二、yarn cache clean [&lt;module_name…&gt;]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、yarn-config-set-cache-folder"><span class="toc-text">三、yarn config set cache-folder </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。"><span class="toc-text">四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、另外一些清理C盘的发现"><span class="toc-text">五、另外一些清理C盘的发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果对你有帮助，可以请我喝杯咖啡"><span class="toc-text">如果对你有帮助，可以请我喝杯咖啡</span></a></li></ol>
+</div>
+
+<!-- <script src="https://utteranc.es/client.js"
+    repo="JackFei/JackFei.github.io"
+    issue-term="pathname"
+    theme="github-light"
+    crossorigin="anonymous"
+    async>
+</script> -->
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Yarn cache之坑
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-05-11 21:37:40</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Yarn" title="Yarn">Yarn</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#Npm" title="Npm">Npm</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>迫于电脑C盘只是128G的固态，虽然还有1个T的机械空间，但完全没用呀😭。眼看C盘越来越小，没办法开始网上各种搜索，优化C盘的办法。</p>
+<p>首先是发现了TreeSize神器，这个能直接看到每个盘下面文件夹的大小，真的是一目了然，强烈推荐。</p>
+<p>这个时候就发现了Yarn会在C盘个人目录下面缓存大量的包，发现的时候已经6个G了😭。</p>
+<p>下面就介绍一下Yarn提供的几个缓存命令：</p>
+<h3 id="一、yarn-cache-dir"><a href="#一、yarn-cache-dir" class="headerlink" title="一、yarn cache dir"></a>一、yarn cache dir</h3><p>运行这个命令会显示出当前缓存目录，默认为C盘。例如我电脑的为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\***\AppData\Local\Yarn\Cache\v4</span><br></pre></td></tr></table></figure></p>
+<h3 id="二、yarn-cache-clean-lt-module-name…-gt"><a href="#二、yarn-cache-clean-lt-module-name…-gt" class="headerlink" title="二、yarn cache clean [&lt;module_name…&gt;]"></a>二、yarn cache clean [&lt;module_name…&gt;]</h3><p>运行这个命令会清理缓存包，如果没有指定包名则会全部清理，指定了就清理相关包。<br>不过要注意，要先清理然后再配置目录，可能会因为配置完目之后，导致之前缓存下来的没法删除。</p>
+<h3 id="三、yarn-config-set-cache-folder"><a href="#三、yarn-config-set-cache-folder" class="headerlink" title="三、yarn config set cache-folder "></a>三、yarn config set cache-folder <path></path></h3><p>设置当前缓存目录，例如我指定了缓存目录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn config set cache-folder G:\YarnCache</span><br></pre></td></tr></table></figure></p>
+<p>运行完当然可以再次运行yarn cache dir，来检查下是否配置成功，当然也可以找一个项目运行yarn install来试下。</p>
+<h3 id="四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。"><a href="#四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。" class="headerlink" title="四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。"></a>四、同样的道理npm也会在用户目录下面缓存大量的文件，不过比yarn少了很多，只有1个G左右。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm config get cache</span><br><span class="line">npm cache clean --force</span><br><span class="line">npm config set cache &quot;D:\ProgramFile\nodejs\node_modules\node_cache&quot;</span><br><span class="line">npm cache verify：验证清理的有效性</span><br></pre></td></tr></table></figure>
+<h3 id="五、另外一些清理C盘的发现"><a href="#五、另外一些清理C盘的发现" class="headerlink" title="五、另外一些清理C盘的发现"></a>五、另外一些清理C盘的发现</h3><ol>
+<li>IntellJ以及基于它开发的Webstrom、AndroidStudio也会在个人目录下面缓存大量的配置文件，1-2个G了，所以JetBrains全家桶可以考虑只装一个IntellJ，其他webstrom、pycharm等可以考虑安装插件。</li>
+<li>window10系统更新完，会在C盘有一个windows.old目录，这个如果系统更新完没有啥问题，过段时间也是可以删除的。</li>
+</ol>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://yarn.bootcss.com/docs/cli/cache/" target="_blank" rel="noopener">https://yarn.bootcss.com/docs/cli/cache/</a></p>
+<h3 id="如果对你有帮助，可以请我喝杯咖啡"><a href="#如果对你有帮助，可以请我喝杯咖啡" class="headerlink" title="如果对你有帮助，可以请我喝杯咖啡"></a>如果对你有帮助，可以请我喝杯咖啡</h3><p><img src="/img/pay.png" alt="avatar"></p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+</div>
+
+<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
+</script>
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/xiaofeihe1993">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio> -->
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>

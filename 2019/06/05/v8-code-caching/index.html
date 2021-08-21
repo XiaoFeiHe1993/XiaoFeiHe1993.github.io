@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        译文：v8 code caching - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>xiaofeihe</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Improved-code-caching"><span class="toc-text">Improved code caching</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Background"><span class="toc-text">Background</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Increasing-the-amount-of-code-that-is-cached"><span class="toc-text">Increasing the amount of code that is cached</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Results"><span class="toc-text">Results</span></a></li></ol>
+</div>
+
+<!-- <script src="https://utteranc.es/client.js"
+    repo="JackFei/JackFei.github.io"
+    issue-term="pathname"
+    theme="github-light"
+    crossorigin="anonymous"
+    async>
+</script> -->
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        译文：v8 code caching
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-06-05 22:07:33</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#译文" title="译文">译文</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>原文链接：<a href="https://v8.dev/blog/improved-code-caching" target="_blank" rel="noopener">https://v8.dev/blog/improved-code-caching</a></p>
+<h3 id="Improved-code-caching"><a href="#Improved-code-caching" class="headerlink" title="Improved code caching"></a>Improved code caching</h3><p>V8使用code caching为经常使用的脚本缓存代码。从Chrome 66开始，我们通过在顶层执行后生成缓存来缓存更多的代码。这将使初始加载期间的解析和编译时间减少20-40%。</p>
+<h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><p>V8使用两种代码缓存来缓存生成的代码，以便稍后重用。第一个是在V8的每个实例中可用的内存缓存。初始编译后生成的代码存储在这个缓存中，键控在源字符串上。这可以在V8的同一个实例中重用。另一种代码缓存会序列化生成的代码，并将其存储在磁盘上供以后使用。此缓存不特定于V8的特定实例，可以跨V8的不同实例使用。这篇博客文章的重点是Chrome中使用的第二种代码缓存。(其他嵌入程序也使用这种代码缓存，它不限于Chrome。然而，这篇博客文章只关注Chrome的使用。)</p>
+<p>Chrome将序列化后的生成代码存储到磁盘缓存中，并使用脚本资源的URL对其进行标记。加载脚本时，Chrome会检查磁盘缓存。如果脚本已经被缓存，Chrome将序列化的数据作为编译请求的一部分传递给V8。然后，V8反序列化这些数据，而不是解析和编译脚本。还需要进行额外的检查，以确保代码仍然可用(例如：版本不匹配使缓存的数据不可用)。</p>
+<p>现实世界的数据表明，代码缓存命中率(对于可以缓存的脚本)很高(~86%)。虽然这些脚本的缓存命中率很高，但是每个脚本缓存的代码数量并不高。我们的分析表明，增加缓存的代码数量将使解析和编译JavaScript代码的时间减少大约40%。</p>
+<h3 id="Increasing-the-amount-of-code-that-is-cached"><a href="#Increasing-the-amount-of-code-that-is-cached" class="headerlink" title="Increasing the amount of code that is cached"></a>Increasing the amount of code that is cached</h3><p>在前面的方法中，代码缓存与编译脚本的请求耦合在一起。</p>
+<p>嵌入者可以请求V8序列化它在顶级编译新JavaScript源文件时生成的代码。V8编译脚本后返回序列化的代码。当Chrome再次请求相同的脚本时，V8从缓存中获取序列化代码并反序列化它。V8完全避免重新编译缓存中已经存在的功能。这些情景如下图所示：</p>
+<p><img src="https://v8.dev/_img/improved-code-caching/warm-hot-run-1.png" alt></p>
+<p>V8只编译期望在顶级编译期间立即执行的函数(IIFE)，并将其他函数标记为延迟编译。这有助于提高页面加载时间，避免编译不需要的函数，但这意味着序列化的数据只包含急切编译的函数的代码。</p>
+<p>在Chrome 59之前，我们必须在执行之前生成代码缓存。早期的V8基线编译器(完全编码)为执行上下文生成专门的代码。全码元使用代码修补程序对特定执行上下文的快速路径操作进行修补.这样的代码不能通过删除要在其他执行上下文中使用的上下文特定数据来轻松序列化。</p>
+<p>随着Chrome 59点火系统的推出，这一限制已不再必要。在当前的执行上下文中，点火使用数据驱动的内联缓存来进行快速路径操作.与上下文相关的数据存储在反馈向量中，并且与生成的代码分离。这打开了生成代码缓存的可能性，即使在脚本执行之后也是如此。当我们执行脚本时，会编译更多的函数(标记为延迟编译)，从而使我们能够缓存更多的代码。</p>
+<p>V8公开了一个新的API ScriptCompiler：CreateCodeCache，以请求独立于编译请求的代码缓存。请求代码缓存和编译请求是不可取的，并且在V8版本6.6之前不能工作。从第66版开始，Chrome使用此API在顶层执行后请求代码缓存。下图显示了请求代码缓存的新场景。代码缓存是在顶层执行之后请求的，因此包含稍后在脚本执行过程中编译的函数的代码。在后面的运行中(下图显示为热运行)，它避免在顶级执行过程中编译函数。</p>
+<p><img src="https://v8.dev/_img/improved-code-caching/warm-hot-run-2.png" alt></p>
+<h3 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h3><p>这个特性的性能是使用我们的内部现实世界基准来衡量的。下图显示了与以前的缓存方案相比，解析和编译时间的缩短。在大多数页面上，解析和编译时间都减少了20-40%。</p>
+<p><img src="https://v8.dev/_img/improved-code-caching/parse.png" alt></p>
+<p><img src="https://v8.dev/_img/improved-code-caching/compile.png" alt></p>
+<p>广泛的数据显示了类似的结果，在桌面和移动平台上编译JavaScript代码所花费的时间减少了20-40%。在android上，这种优化还可以将顶级页面负载指标减少1-2%，比如网页进行交互所需的时间。我们还监控了Chrome的内存和磁盘使用情况，没有看到任何明显的倒退。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+</div>
+
+<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
+</script>
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/xiaofeihe1993">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio> -->
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>

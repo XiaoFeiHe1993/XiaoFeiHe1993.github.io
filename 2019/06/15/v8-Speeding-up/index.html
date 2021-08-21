@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        译文：v8-Speeding-up - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=66401692" charset="UTF-8"></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i>  </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="https://github.com/JackFei/JackFei.github.io/blob/master/img/icon_header.png?raw=true">
+        </div>
+        <div class="name">
+            <i>xiaofeihe</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Speeding-up-spread-elements"><span class="toc-text">Speeding up spread elements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spread-elements"><span class="toc-text">Spread elements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-is-or-were-spread-elements-slow"><span class="toc-text">Why is (or were!) spread elements slow?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tread-carefully-down-that-fast-path"><span class="toc-text">Tread carefully down that fast path</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Own-Symbol-iterator-property"><span class="toc-text">Own Symbol.iterator property</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Modified-ArrayIteratorPrototype"><span class="toc-text">Modified %ArrayIteratorPrototype%</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spreading-strings-sets-and-maps"><span class="toc-text">Spreading strings, sets, and maps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Improving-Array-from-performance"><span class="toc-text">Improving Array.from performance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Conclusion"><span class="toc-text">Conclusion</span></a></li></ol>
+</div>
+
+<!-- <script src="https://utteranc.es/client.js"
+    repo="JackFei/JackFei.github.io"
+    issue-term="pathname"
+    theme="github-light"
+    crossorigin="anonymous"
+    async>
+</script> -->
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i>  </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        译文：v8-Speeding-up
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-06-15 17:47:48</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#译文" title="译文">译文</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>原文链接：<a href="https://v8.dev/blog/spread-elements" target="_blank" rel="noopener">https://v8.dev/blog/spread-elements</a></p>
+<h3 id="Speeding-up-spread-elements"><a href="#Speeding-up-spread-elements" class="headerlink" title="Speeding up spread elements"></a>Speeding up spread elements</h3><p>在V8团队三个月的实习期间，海当致力于提高[…array]、 […string]、[…set]、 […map.keys()] 和 […map.values()]的性能（当扩展运算符位于数组的开头时）。他甚至把<code>Array.from(iterable)</code>也做得更快了。本文解释了他更改的一些细节，这些细节包含在V8中，从v7.2开始。</p>
+<h3 id="Spread-elements"><a href="#Spread-elements" class="headerlink" title="Spread elements"></a>Spread elements</h3><p>扩展运算符是数组的组件，其形式是<code>...iterable</code>。它们是在ES 2015中引入的，作为从可迭代对象创建数组的一种方法。例如，数组[1，…arr，4，…b]来创建一个数组，其第一个元素是1，然后是数组arr的元素，然后是4，最后是数组b的元素。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const a = [2, 3];</span><br><span class="line">const b = [5, 6, 7];</span><br><span class="line">const result = [1, ...a, 4, ...b];</span><br><span class="line">// → [1, 2, 3, 4, 5, 6, 7]</span><br></pre></td></tr></table></figure>
+<p>另一个例子是，任何字符串都可以被扩展以创建其字符数组（Unicode代码点）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const str = &apos;こんにちは&apos;;</span><br><span class="line">const result = [...str];</span><br><span class="line">// → [&apos;こ&apos;, &apos;ん&apos;, &apos;に&apos;, &apos;ち&apos;, &apos;は&apos;]</span><br></pre></td></tr></table></figure>
+<p>类似地，任何集合都可以被扩展以创建其元素数组，并按插入顺序排序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const s = new Set();</span><br><span class="line">s.add(&apos;V8&apos;);</span><br><span class="line">s.add(&apos;TurboFan&apos;);</span><br><span class="line">const result = [...s];</span><br><span class="line">// → [&apos;V8&apos;, &apos;TurboFan&apos;]</span><br></pre></td></tr></table></figure>
+<p>一般说来，数组中的扩展运算符<code>...x</code>，假定<code>x</code>提供了一个迭代器（通过<code>x[Symbol.iterator]()</code>访问）。然后使用这个迭代器获取要插入到结果数组中的元素。</p>
+<p>简单的用例将数组<code>arr</code>扩展到一个新的数组中，而不在[…arr]之前或后面添加任何进一步的元素，这被认为是ES 2015中浅层克隆<code>arr</code>的一种简洁、惯用的方法。不幸的是，在V8，这个性能远远落后于它的ES5对应。海的实习目标就是改变这种状况！</p>
+<h3 id="Why-is-or-were-spread-elements-slow"><a href="#Why-is-or-were-spread-elements-slow" class="headerlink" title="Why is (or were!) spread elements slow?"></a>Why is (or were!) spread elements slow?</h3><p>浅克隆数组<code>arr</code>的方法有很多种。例如，可以使用<code>arr.slice()</code>，或者<code>arr.concat()</code>，或者[…arr]。或者，您可以编写自己的克隆函数，使用标准的<code>for-loop</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function clone(arr) &#123;</span><br><span class="line">  // Pre-allocate the correct number of elements, to avoid</span><br><span class="line">  // having to grow the array.</span><br><span class="line">  const result = new Array(arr.length);</span><br><span class="line">  for (let i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">    result[i] = arr[i];</span><br><span class="line">  &#125;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>理想情况下，所有这些选项都具有相似的性能特征。不幸的是，如果您在V8中选择 <code>[...arr]</code>，它可能比克隆速度慢(或曾经)慢。原因是V8本质上将 <code>[...arr]</code> 转成如下所示的迭代。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function(arr) &#123;</span><br><span class="line">  const result = [];</span><br><span class="line">  const iterator = arr[Symbol.iterator]();</span><br><span class="line">  const next = iterator.next;</span><br><span class="line">  for ( ; ; ) &#123;</span><br><span class="line">    const iteratorResult = next.call(iterator);</span><br><span class="line">    if (iteratorResult.done) break;</span><br><span class="line">    result.push(iteratorResult.value);</span><br><span class="line">  &#125;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于几个原因，此代码通常比克隆速度慢。</p>
+<ol>
+<li><p>它需要在开始时通过加载和计算 Symbol.iterator 属性来创建迭代器。</p>
+</li>
+<li><p>它需要在每一步创建和查询迭代器 Result 对象。</p>
+</li>
+<li><p>它通过调用 Push 在迭代的每一步生成结果数组，从而重复地重新分配备份存储。</p>
+</li>
+</ol>
+<p>使用这种实现的原因是，如前所述，传播不仅可以在数组上进行，而且可以在，使用这种实现的原因是，如前所述，传播不仅可以在数组上进行，而且可以在。尽管如此，V8应该足够聪明地识别正在传播的对象是否是一个数组，以便它能够在较低的级别执行元素提取，从而执行元素提取。</p>
+<ol>
+<li><p>避免创建迭代器对象</p>
+</li>
+<li><p>避免创建迭代器结果对象</p>
+</li>
+<li><p>避免不断增长，从而重新分配结果数组(我们预先知道元素的数量)</p>
+</li>
+</ol>
+<p>对于快速数组，我们使用 csa 实现了这个简单的想法，即具有六种最常见元素类型之一的数组。优化适用于常见的实际场景，其中扩展发生在数组文字的开头，例如 <code>[...foo]</code>。如下图所示，这种新的快速路径对于扩展长度为100，000的数组产生了大约3×性能的改进，使其比手写的克隆循环快25%左右。</p>
+<p><img src="https://v8.dev/_img/spread-elements/spread-fast-array.png" alt></p>
+<p>Note：虽然这里没有显示，但是当扩展元素后面跟着其他组件时，快速路径也适用(例如 <code>[.arr，1，2，3]</code>，但当它们前面有其他的(例如 <code>[1，2，3，.arr]</code>)时就不是了。</p>
+<h3 id="Tread-carefully-down-that-fast-path"><a href="#Tread-carefully-down-that-fast-path" class="headerlink" title="Tread carefully down that fast path"></a>Tread carefully down that fast path</h3><p>这显然是一个令人印象深刻的加速，但我们必须非常小心，什么时候它是正确的走这条快速的道路：JavaScript 允许程序员以各种方式修改对象(甚至数组)的迭代行为。因为扩展元素被指定为使用迭代协议，所以我们需要确保这些修改得到认可。我们这样做是为了避免在原始迭代机制发生变异时完全避免快速路径。例如，这包括以下情况。</p>
+<h3 id="Own-Symbol-iterator-property"><a href="#Own-Symbol-iterator-property" class="headerlink" title="Own Symbol.iterator property"></a>Own Symbol.iterator property</h3><p>通常，数组 <code>arr</code> 没有自己的 Symbol.iterator 属性，所以当查找该符号时，将在数组的原型中找到它。在下面的示例中，通过直接在 <code>arr</code> 上定义 Symbol.iterator 属性绕过了原型。修改后，在arr上查找 Symbol.iterator 将生成一个空迭代器，因此 arr 的扩展不会产生任何元素，数组的计算结果为空数组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const arr = [1, 2, 3];</span><br><span class="line">arr[Symbol.iterator] = function() &#123;</span><br><span class="line">  return &#123; next: function() &#123; return &#123; done: true &#125;; &#125; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line">const result = [...arr];</span><br><span class="line">// → []</span><br></pre></td></tr></table></figure>
+<h3 id="Modified-ArrayIteratorPrototype"><a href="#Modified-ArrayIteratorPrototype" class="headerlink" title="Modified %ArrayIteratorPrototype%"></a>Modified %ArrayIteratorPrototype%</h3><p>下一个方法也可以在%ArrayIteratorPrototype%，数组迭代器的原型(影响所有数组)上直接修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Object.getPrototypeOf([][Symbol.iterator]()).next = function() &#123;</span><br><span class="line">  return &#123; done: true &#125;;</span><br><span class="line">&#125;</span><br><span class="line">const arr = [1, 2, 3];</span><br><span class="line">const result = [...arr];</span><br><span class="line">// → []</span><br></pre></td></tr></table></figure>
+<h3 id="Spreading-strings-sets-and-maps"><a href="#Spreading-strings-sets-and-maps" class="headerlink" title="Spreading strings, sets, and maps"></a>Spreading strings, sets, and maps</h3><p>跳过迭代器对象和避免增长结果数组的想法同样适用于传播其他标准数据类型。实际上，对于原始字符串、集合和映射，我们实现了类似的快速路径，每次都要注意在存在修改的迭代行为时绕过它们。</p>
+<p>对于集合，快速路径不仅支持直接扩展集合([.set])，还支持扩展其键迭代器([.set.key()])和值迭代器([.set.value()])。在我们的微观基准中，这些操作现在比以前快了大约18×。</p>
+<p>map的快速路径类似，但不支持直接传播map([.map])，因为我们认为这是一种不常见的操作。出于同样的原因，两种快速路径都不支持 <code>entries()</code> 迭代器。在我们的微基准中，这些操作现在比以前快了大约14×。</p>
+<p>对于扩展字符串([[…string])，我们测量了一个大约5×改进，如下图所示的紫色和绿色线。请注意，这甚至比涡轮风扇优化的循环(涡轮风扇理解字符串迭代，并可以为它生成优化的代码)，以蓝色和粉红色线表示。在每种情况下都有两幅图的原因是微基准测试在两种不同的字符串表示(一字节字符串和两字节字符串)上运行。</p>
+<p><img src="https://v8.dev/_img/spread-elements/spread-string.png" alt></p>
+<p><img src="https://v8.dev/_img/spread-elements/spread-set.png" alt></p>
+<h3 id="Improving-Array-from-performance"><a href="#Improving-Array-from-performance" class="headerlink" title="Improving Array.from performance"></a>Improving Array.from performance</h3><p>幸运的是，我们的扩展运算符的快速路径可以在 <code>Array.from</code> 中重用，在这种情况下，<code>Array.From</code> 是用一个可迭代的对象调用，并且没有映射函数。例如，<code>Array.From([1，2，3])</code>。重用是可能的，因为在这种情况下，<code>Array.From</code> 的行为与扩展行为完全相同。它带来了巨大的性能改进，如下所示，一个数组的100倍。</p>
+<p><img src="https://v8.dev/_img/spread-elements/array-from-array-of-doubles.png" alt></p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>V8 v7.2/Chrome 72大大提高了扩展运算符在数组前面出现的性能。例如 <code>[...x]</code> 或者 <code>[...x, 1, 2]</code>。这种改进适用于spreading arrays、primitive strings、sets、maps keys、maps values，以及通过扩展到 <code>Array.From(X)</code>。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+    <a href="https://info.flagcounter.com/NS7B" style="margin-top: 70px;height: 150px;"><img src="https://s01.flagcounter.com/count2/NS7B/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+</div>
+
+<script src="https://utteranc.es/client.js" repo="JackFei/JackFei.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
+</script>
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/xiaofeihe1993">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+    </p>
+</footer>
+<!-- <audio id="audio" preload="none" loop autoplay volume="0.1">
+   <source id="mp3" src="/audio/一休歌.mp3">
+</audio> -->
+<script type="text/javascript" color="255,255,255" opacity="0.8" zindex="0" count="190" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+</html>
